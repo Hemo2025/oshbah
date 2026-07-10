@@ -24,8 +24,7 @@ function ProductForm() {
   const { id } = useParams();
   const isEditing = Boolean(id);
 
-  const { categories, addProduct, updateProduct, getProductById } =
-    useStore();
+  const { categories, addProduct, updateProduct, getProductById } = useStore();
 
   const existingProduct = isEditing ? getProductById(id) : null;
 
@@ -36,9 +35,7 @@ function ProductForm() {
         ingredients: existingProduct.ingredients?.length
           ? existingProduct.ingredients
           : [""],
-        images: existingProduct.images?.length
-          ? existingProduct.images
-          : [""],
+        images: existingProduct.images?.length ? existingProduct.images : [""],
       };
     }
     return emptyProduct;
@@ -87,6 +84,17 @@ function ProductForm() {
       const list = prev[field].filter((_, i) => i !== index);
       return { ...prev, [field]: list.length ? list : [""] };
     });
+  };
+  const handleFileUpload = (index, file) => {
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      handleListChange("images", index, reader.result);
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e) => {
@@ -271,29 +279,76 @@ function ProductForm() {
 
           {/* Images list */}
           <div className="mt-6">
-            <label className="mb-2 block font-semibold text-gray-700">
-              روابط الصور
+            <label className="mb-3 block font-semibold text-gray-700">
+              صور المنتج
             </label>
             {form.images.map((img, index) => (
-              <div key={index} className="mb-2 flex gap-2">
-                <input
-                  type="text"
-                  value={img}
-                  onChange={(e) =>
-                    handleListChange("images", index, e.target.value)
-                  }
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                  placeholder="https://..."
-                />
-                <button
-                  type="button"
-                  onClick={() => removeListItem("images", index)}
-                  className="rounded-xl bg-red-500 px-4 text-white hover:bg-red-600"
-                >
-                  <FaTrash />
-                </button>
+              <div
+                key={index}
+                className="mb-4 rounded-2xl border bg-gray-50 p-4"
+              >
+                <div className="flex flex-col gap-3 md:flex-row">
+                  <input
+                    type="text"
+                    value={img}
+                    onChange={(e) =>
+                      handleListChange("images", index, e.target.value)
+                    }
+                    className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
+                    placeholder="https://example.com/image.jpg"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => removeListItem("images", index)}
+                    className="rounded-xl bg-red-500 px-4 text-white hover:bg-red-600"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <label className="cursor-pointer rounded-xl bg-blue-600 px-5 py-3 text-white hover:bg-blue-700">
+                    📷 رفع صورة
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) =>
+                        handleFileUpload(index, e.target.files[0])
+                      }
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const text = await navigator.clipboard.readText();
+
+                        handleListChange("images", index, text);
+                      } catch {
+                        alert("تعذر الوصول إلى الحافظة");
+                      }
+                    }}
+                    className="rounded-xl bg-green-600 px-5 py-3 text-white hover:bg-green-700"
+                  >
+                    📋 لصق رابط
+                  </button>
+                </div>
+
+                {img && (
+                  <div className="mt-4">
+                    <img
+                      src={img}
+                      alt="preview"
+                      className="h-40 w-40 rounded-xl border object-cover shadow"
+                    />
+                  </div>
+                )}
               </div>
             ))}
+
             <button
               type="button"
               onClick={() => addListItem("images")}

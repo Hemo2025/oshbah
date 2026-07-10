@@ -35,7 +35,7 @@ export default function Checkout() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = validate();
@@ -44,7 +44,7 @@ export default function Checkout() {
 
     setSubmitting(true);
 
-    const order = createOrder({
+    const order = await  createOrder({
       customer,
       items: cartItems.map((item) => ({
         id: item.id,

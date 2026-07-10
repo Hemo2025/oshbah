@@ -1,23 +1,18 @@
 import { useEffect, useState } from "react";
-import initialProducts from "../data/products";
-import initialCategories from "../data/categories";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+
+import { db } from "../firebase/config";
 import { StoreContext } from "./store-context-instance";
 
-const PRODUCTS_KEY = "oshbah_products";
-const CATEGORIES_KEY = "oshbah_categories";
-
-function loadFromStorage(key, fallback) {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function slugify(text) {
+function slugify(text = "") {
   return text
     .toString()
     .trim()
@@ -26,104 +21,160 @@ function slugify(text) {
 }
 
 export function StoreProvider({ children }) {
-  const [products, setProducts] = useState(() =>
-    loadFromStorage(PRODUCTS_KEY, initialProducts),
-  );
-  const [categories, setCategories] = useState(() =>
-    loadFromStorage(CATEGORIES_KEY, initialCategories),
-  );
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // جلب المنتجات والتصنيفات من Firebase
   useEffect(() => {
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-  }, [products]);
+    const loadData = async () => {
+      try {
+        const productsSnapshot = await getDocs(collection(db, "products"));
 
-  useEffect(() => {
-    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
-  }, [categories]);
+        const productsData = productsSnapshot.docs.map((item) => ({
+          id: item.id,
+          ...item.data(),
+        }));
 
-  // ---------- Products CRUD ----------
-  const addProduct = (product) => {
-    const nextId =
-      products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
+        setProducts(productsData);
 
+        const categoriesSnapshot = await getDocs(collection(db, "categories"));
+
+        const categoriesData = categoriesSnapshot.docs.map((item) => ({
+          id: item.id,
+          ...item.data(),
+        }));
+
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("Firebase load error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  // ---------------- Products ----------------
+
+  const addProduct = async (product) => {
     const newProduct = {
-      id: nextId,
+      ...product,
+
       slug: product.slug ? slugify(product.slug) : slugify(product.name),
+
       rating: 5,
       reviews: 0,
-      images: [],
-      ingredients: [],
-      ...product,
+
+      images: product.images || [],
+      ingredients: product.ingredients || [],
+
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+
+      status: "active",
     };
 
-    setProducts((prev) => [...prev, newProduct]);
-    return newProduct;
+    const ref = await addDoc(collection(db, "products"), newProduct);
+
+    const savedProduct = {
+      id: ref.id,
+      ...newProduct,
+    };
+
+    setProducts((prev) => [...prev, savedProduct]);
+
+    return savedProduct;
   };
 
-  const updateProduct = (id, updates) => {
+  const updateProduct = async (id, updates) => {
+    const productRef = doc(db, "products", id);
+
+    await updateDoc(productRef, {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    });
+
     setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+      prev.map((product) =>
+        product.id === id
+          ? {
+              ...product,
+              ...updates,
+            }
+          : product,
+      ),
     );
   };
 
-  const deleteProduct = (id) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+  const deleteProduct = async (id) => {
+    await deleteDoc(doc(db, "products", id));
+
+    setProducts((prev) => prev.filter((product) => product.id !== id));
   };
 
-  const getProductById = (id) =>
-    products.find((p) => String(p.id) === String(id));
+  const getProductById = (id) => products.find((product) => product.id === id);
 
-  const getProductBySlug = (slug) => products.find((p) => p.slug === slug);
+  const getProductBySlug = (slug) =>
+    products.find((product) => product.slug === slug);
 
-  // ---------- Categories CRUD ----------
-  const addCategory = (category) => {
-    const nextId =
-      categories.length > 0
-        ? Math.max(...categories.map((c) => c.id)) + 1
-        : 1;
+  // ---------------- Categories ----------------
 
+  const addCategory = async (category) => {
     const newCategory = {
-      id: nextId,
-      slug: category.slug ? slugify(category.slug) : slugify(category.name),
-      image: "",
       ...category,
+
+      slug: category.slug ? slugify(category.slug) : slugify(category.name),
+
+      createdAt: serverTimestamp(),
     };
 
-    setCategories((prev) => [...prev, newCategory]);
-    return newCategory;
+    const ref = await addDoc(collection(db, "categories"), newCategory);
+
+    const savedCategory = {
+      id: ref.id,
+      ...newCategory,
+    };
+
+    setCategories((prev) => [...prev, savedCategory]);
+
+    return savedCategory;
   };
 
-  const updateCategory = (id, updates) => {
-    const oldCategory = categories.find((c) => c.id === id);
+  const updateCategory = async (id, updates) => {
+    await updateDoc(doc(db, "categories", id), updates);
 
     setCategories((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...updates } : c)),
+      prev.map((category) =>
+        category.id === id
+          ? {
+              ...category,
+              ...updates,
+            }
+          : category,
+      ),
     );
-
-    // Keep products in sync if the category name changes
-    if (oldCategory && updates.name && updates.name !== oldCategory.name) {
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.category === oldCategory.name
-            ? { ...p, category: updates.name }
-            : p,
-        ),
-      );
-    }
   };
 
-  const deleteCategory = (id) => {
-    setCategories((prev) => prev.filter((c) => c.id !== id));
+  const deleteCategory = async (id) => {
+    await deleteDoc(doc(db, "categories", id));
+
+    setCategories((prev) => prev.filter((category) => category.id !== id));
   };
 
   const value = {
     products,
     categories,
+    loading,
+
     addProduct,
     updateProduct,
     deleteProduct,
+
     getProductById,
     getProductBySlug,
+
     addCategory,
     updateCategory,
     deleteCategory,

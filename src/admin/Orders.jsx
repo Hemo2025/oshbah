@@ -83,19 +83,22 @@ function Orders() {
                       key={order.id}
                       className="border-t transition hover:bg-gray-50"
                     >
-                      <td className="p-4 font-semibold">
-                        {order.orderNumber}
-                      </td>
+                      <td className="p-4 font-semibold">{order.orderNumber}</td>
 
                       <td className="p-4">
-                        <p className="font-medium">{order.customer.name}</p>
+                        <p className="font-medium">
+                          {order.customer?.name || "بدون اسم"}
+                        </p>
+
                         <p className="text-sm text-gray-500">
-                          {order.customer.phone}
+                          {order.customer?.phone || ""}
                         </p>
                       </td>
 
                       <td className="p-4 text-sm text-gray-500">
-                        {new Date(order.date).toLocaleDateString("ar-SA")}
+                        {order.createdAt?.toDate
+                          ? order.createdAt.toDate().toLocaleDateString("ar-SA")
+                          : new Date(order.date).toLocaleDateString("ar-SA")}
                       </td>
 
                       <td className="p-4 text-center font-semibold">
@@ -132,10 +135,7 @@ function Orders() {
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan="6"
-                      className="py-10 text-center text-gray-500"
-                    >
+                    <td colSpan="6" className="py-10 text-center text-gray-500">
                       لا توجد طلبات.
                     </td>
                   </tr>
@@ -165,21 +165,21 @@ function Orders() {
             <div className="mb-4 rounded-xl bg-gray-50 p-4 text-sm">
               <p>
                 <span className="font-semibold">الاسم: </span>
-                {selectedOrder.customer.name}
+                {selectedOrder.customer?.name || "-"}
               </p>
               <p>
                 <span className="font-semibold">الجوال: </span>
-                {selectedOrder.customer.phone}
+                {selectedOrder.customer?.phone || "-"}    
               </p>
               <p>
                 <span className="font-semibold">المدينة: </span>
-                {selectedOrder.customer.city}
+                {selectedOrder.customer?.city || "-"}
               </p>
               <p>
                 <span className="font-semibold">العنوان: </span>
-                {selectedOrder.customer.address}
+                {selectedOrder.customer?.address || "-"}
               </p>
-              {selectedOrder.customer.notes && (
+              {selectedOrder.customer?.notes && (
                 <p>
                   <span className="font-semibold">ملاحظات: </span>
                   {selectedOrder.customer.notes}
