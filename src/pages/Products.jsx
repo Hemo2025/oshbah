@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { FaStar, FaShoppingCart, FaSearch, FaCheck, FaHeart, FaTimes } from "react-icons/fa";
+import {
+  FaStar,
+  FaShoppingCart,
+  FaSearch,
+  FaCheck,
+  FaHeart,
+  FaTimes,
+} from "react-icons/fa";
 import { useStore } from "../hooks/useStore";
 import { useCart } from "../hooks/useCart";
 import { useWishlist } from "../hooks/useWishlist";
@@ -157,8 +164,7 @@ export default function Products() {
 
           {(search || activeCategory) && (
             <p className="text-center text-sm text-gray-500">
-              {filteredProducts.length} نتيجة
-              {" "}
+              {filteredProducts.length} نتيجة{" "}
               <button
                 onClick={clearFilters}
                 className="text-green-700 underline hover:text-green-800"

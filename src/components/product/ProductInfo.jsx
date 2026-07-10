@@ -20,10 +20,15 @@ function ProductInfo({ product }) {
         <span className="text-xl text-gray-400 line-through">
           {product.oldPrice} ر.س
         </span>
-
-        <span className="rounded-full bg-red-100 px-3 py-1 text-red-600">
-          %{product.discount}
-        </span>
+        {product.oldPrice && product.price && (
+          <span className="rounded-full bg-red-100 px-3 py-1 text-red-600">
+            %{" "}
+            {Math.round(
+              ((product.oldPrice - product.price) / product.oldPrice) * 100,
+            )}
+            خصم
+          </span>
+        )}
       </div>
 
       <div className="mt-6">
