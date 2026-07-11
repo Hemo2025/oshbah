@@ -12,7 +12,7 @@ function Hero() {
 
           <h1 className="mt-6 text-5xl font-bold leading-tight text-gray-800">
             اكتشف قوة الطبيعة مع
-            <span className="text-green-600"> عُشبة 🌿</span>
+            <span className="text-green-600"> عُشبة ستور🌿</span>
           </h1>
 
           <p className="mt-6 text-lg text-gray-600">

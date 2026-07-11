@@ -9,7 +9,7 @@ function Categories() {
     <section className="bg-white py-20">
       <div className="mx-auto max-w-7xl px-6">
         <h2 className="mb-12 text-center text-4xl font-bold text-gray-800">
-          تصنيفات متجر عُشبة 🌿
+          تصنيفات عُشبة ستور🌿
         </h2>
 
         {categories.length === 0 ? (
@@ -49,9 +49,7 @@ function Categories() {
                   </div>
                 )}
 
-                <h3 className="text-xl font-bold text-gray-700">
-                  {item.name}
-                </h3>
+                <h3 className="text-xl font-bold text-gray-700">{item.name}</h3>
               </Link>
             ))}
           </div>

@@ -28,7 +28,7 @@ function WhyUs() {
     <section className="bg-white py-20">
       <div className="mx-auto max-w-7xl px-6">
         <h2 className="mb-14 text-center text-4xl font-bold text-gray-800">
-          لماذا تختار عُشبة؟ 🌿
+          لماذا تختار عُشبة ستور؟ 🌿
         </h2>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">

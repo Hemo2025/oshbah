@@ -62,7 +62,7 @@ function Header() {
         <Link to="/" className="flex items-center gap-2">
           <FaLeaf className="text-3xl text-green-600" />
           <h1 className="text-2xl font-bold text-green-700 sm:text-3xl">
-            عُشبة
+            عُشبة ستور
           </h1>
         </Link>
 

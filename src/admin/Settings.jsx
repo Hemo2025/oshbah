@@ -22,11 +22,16 @@ function Settings() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    updateSettings(form);
+
+    await updateSettings(form);
+
     setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+
+    setTimeout(() => {
+      setSaved(false);
+    }, 2000);
   };
 
   const handleReset = () => {

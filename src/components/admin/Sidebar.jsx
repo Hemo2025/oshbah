@@ -57,7 +57,7 @@ function Sidebar({ newOrdersCount = 0 }) {
   return (
     <aside className="flex h-screen w-72 flex-col bg-green-700 text-white">
       <div className="border-b border-green-600 p-6 text-center">
-        <h1 className="text-3xl font-bold">🌿 عشبة</h1>
+        <h1 className="text-3xl font-bold">🌿 عشبة ستور</h1>
 
         <p className="mt-2 text-sm text-green-100">لوحة التحكم</p>
       </div>

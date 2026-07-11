@@ -2,33 +2,75 @@ import { useEffect, useState } from "react";
 import { SettingsContext } from "./settings-context-instance";
 import { DEFAULT_SETTINGS } from "./default-settings";
 
-const SETTINGS_KEY = "oshbah_settings";
-
-function loadSettings() {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (!raw) return DEFAULT_SETTINGS;
-    const parsed = JSON.parse(raw);
-    return { ...DEFAULT_SETTINGS, ...parsed };
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
-}
+import { getSettings, saveSettings } from "../services/settingsService";
 
 export function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState(loadSettings);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  }, [settings]);
+    let mounted = true;
 
-  const updateSettings = (updates) => {
-    setSettings((prev) => ({ ...prev, ...updates }));
+    const init = async () => {
+      try {
+        const data = await getSettings();
+
+        if (mounted && data) {
+          setSettings({
+            ...DEFAULT_SETTINGS,
+            ...data,
+          });
+        }
+      } catch (error) {
+        console.error("Error loading settings:", error);
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    init();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const updateSettings = async (updates) => {
+    try {
+      const newSettings = {
+        ...settings,
+        ...updates,
+      };
+
+      setSettings(newSettings);
+
+      await saveSettings(newSettings);
+    } catch (error) {
+      console.error("Error saving settings:", error);
+    }
   };
 
-  const resetSettings = () => setSettings(DEFAULT_SETTINGS);
+  const resetSettings = async () => {
+    try {
+      setSettings(DEFAULT_SETTINGS);
 
-  const value = { settings, updateSettings, resetSettings };
+      await saveSettings(DEFAULT_SETTINGS);
+    } catch (error) {
+      console.error("Error resetting settings:", error);
+    }
+  };
+
+  const value = {
+    settings,
+    updateSettings,
+    resetSettings,
+  };
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <SettingsContext.Provider value={value}>
