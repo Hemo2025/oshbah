@@ -17,7 +17,8 @@ export default function WhatsAppButton({ order }) {
 رقم الطلب:
 ${order.orderNumber}
 
-تفاصيل الطلب:
+
+(تفاصيل الطلب):
 ${order.items
   ?.map(
     (item) =>
@@ -25,7 +26,7 @@ ${order.items
   )
   .join("\n")}
 
-إجمالي الطلب:😅
+إجمالي الطلب:
 ${order.total} ريال
 
 طريقة الدفع:
