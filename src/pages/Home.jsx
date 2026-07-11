@@ -8,20 +8,22 @@ import Newsletter from "../components/common/Newsletter";
 
 export default function Home() {
   return (
-    <>
+    <div className="bg-gray-50">
       <Hero />
 
-      <Categories />
+      <div className="space-y-20 py-12">
+        <Categories />
 
-      <OffersSection />
+        <OffersSection />
 
-      <FeaturedProducts />
+        <FeaturedProducts />
 
-      <NewProducts />
+        <WhyUs />
 
-      <WhyUs />
+        <NewProducts />
 
-      <Newsletter />
-    </>
+        <Newsletter />
+      </div>
+    </div>
   );
 }
