@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
-  getDocs,
   updateDoc,
   doc,
   serverTimestamp,
+  onSnapshot,
+  query,
+  orderBy,
+  getDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
 import { db } from "../firebase/config";
@@ -13,6 +17,7 @@ import { OrderContext } from "./order-context-instance";
 
 export function OrderProvider({ children }) {
   const [orders, setOrders] = useState([]);
+
   const [myOrderNumbers, setMyOrderNumbers] = useState(() => {
     try {
       const saved = localStorage.getItem("oshbah_my_order_numbers");
@@ -23,24 +28,26 @@ export function OrderProvider({ children }) {
     }
   });
 
-  // جلب الطلبات من Firebase
+  // جلب الطلبات
   useEffect(() => {
-    const loadOrders = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "orders"));
+    const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
 
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
         const data = snapshot.docs.map((item) => ({
           id: item.id,
           ...item.data(),
         }));
 
         setOrders(data);
-      } catch (error) {
+      },
+      (error) => {
         console.error("Orders Firebase Error:", error);
-      }
-    };
+      },
+    );
 
-    loadOrders();
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -50,12 +57,14 @@ export function OrderProvider({ children }) {
     );
   }, [myOrderNumbers]);
 
-  // إنشاء طلب جديد
+  // إنشاء طلب
   const createOrder = async ({ customer, items, total }) => {
     const nextNumber =
       orders.length > 0
         ? Math.max(
-            ...orders.map((o) => Number(o.orderNumber?.replace("ORD-", ""))),
+            ...orders.map(
+              (o) => Number(o.orderNumber?.replace("ORD-", "")) || 0,
+            ),
           ) + 1
         : 1001;
 
@@ -65,6 +74,13 @@ export function OrderProvider({ children }) {
       date: new Date().toISOString(),
 
       status: "pending",
+
+      history: [
+        {
+          status: "pending",
+          date: new Date().toISOString(),
+        },
+      ],
 
       customer,
 
@@ -79,10 +95,9 @@ export function OrderProvider({ children }) {
 
     const savedOrder = {
       id: ref.id,
+
       ...newOrder,
     };
-
-    setOrders((prev) => [savedOrder, ...prev]);
 
     setMyOrderNumbers((prev) => [savedOrder.orderNumber, ...prev]);
 
@@ -91,24 +106,70 @@ export function OrderProvider({ children }) {
 
   // تحديث حالة الطلب
   const updateOrderStatus = async (id, status) => {
+    const order = orders.find((o) => o.id === id);
+
+    if (!order) return;
+
+    // خصم المخزون عند اكتمال الطلب
+    if (status === "completed" && order.status !== "completed") {
+      for (const item of order.items) {
+        const productRef = doc(db, "products", item.id);
+
+        const productSnap = await getDoc(productRef);
+
+        if (productSnap.exists()) {
+          const product = productSnap.data();
+
+          const currentStock = Number(product.stock || 0);
+
+          const newStock = Math.max(0, currentStock - Number(item.quantity));
+
+          await updateDoc(productRef, {
+            stock: newStock,
+            updatedAt: serverTimestamp(),
+          });
+        }
+      }
+    }
+
+    const newHistory = [
+      ...(order.history || []),
+
+      {
+        status,
+
+        date: new Date().toISOString(),
+      },
+    ];
+
     await updateDoc(doc(db, "orders", id), {
       status,
-    });
 
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === id
-          ? {
-              ...order,
-              status,
-            }
-          : order,
-      ),
+      history: newHistory,
+    });
+  };
+
+  // حذف طلب
+  const deleteOrder = async (id) => {
+    await deleteDoc(doc(db, "orders", id));
+
+    setOrders((prev) => prev.filter((order) => order.id !== id));
+
+    setMyOrderNumbers((prev) =>
+      prev.filter((number) => {
+        const order = orders.find((o) => o.id === id);
+
+        return number !== order?.orderNumber;
+      }),
     );
   };
 
+  // جلب طلب بالرقم
   const getOrderByNumber = (orderNumber) =>
     orders.find((order) => order.orderNumber === orderNumber);
+
+  // جلب طلب بالمعرف
+  const getOrderById = (id) => orders.find((order) => order.id === id);
 
   const findOrder = (orderNumber, phone) => {
     const cleanPhone = phone.trim().replace(/\s/g, "");
@@ -124,22 +185,35 @@ export function OrderProvider({ children }) {
   };
 
   const myOrders = myOrderNumbers
+
     .map((number) => orders.find((order) => order.orderNumber === number))
+
     .filter(Boolean);
 
   const totalRevenue = orders
+
     .filter((order) => order.status !== "cancelled")
-    .reduce((sum, order) => sum + Number(order.total || 0), 0);
+
+    .reduce(
+      (sum, order) => sum + Number(order.total || 0),
+
+      0,
+    );
 
   const value = {
     orders,
+
     myOrders,
 
     createOrder,
 
     updateOrderStatus,
 
+    deleteOrder,
+
     getOrderByNumber,
+
+    getOrderById,
 
     findOrder,
 

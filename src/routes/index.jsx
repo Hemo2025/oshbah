@@ -22,7 +22,7 @@ import AdminOrders from "../admin/Orders";
 import AdminSettings from "../admin/Settings";
 import ProductForm from "../admin/ProductForm";
 import ProtectedRoute from "./ProtectedRoute";
-
+import OrderDetails from "../admin/OrderDetails";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -100,6 +100,10 @@ const router = createBrowserRouter([
           {
             path: "orders",
             element: <AdminOrders />,
+          },
+          {
+            path: "orders/:id",
+            element: <OrderDetails />,
           },
           {
             path: "settings",

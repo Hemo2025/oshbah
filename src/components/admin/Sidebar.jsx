@@ -8,9 +8,10 @@ import {
   FaCog,
   FaSignOutAlt,
 } from "react-icons/fa";
+
 import { useAuth } from "../../hooks/useAuth";
 
-function Sidebar() {
+function Sidebar({ newOrdersCount = 0 }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -39,6 +40,7 @@ function Sidebar() {
       name: "الطلبات",
       icon: <FaShoppingCart />,
       path: "/admin/orders",
+      badge: newOrdersCount,
     },
     {
       name: "التصنيفات",
@@ -56,6 +58,7 @@ function Sidebar() {
     <aside className="flex h-screen w-72 flex-col bg-green-700 text-white">
       <div className="border-b border-green-600 p-6 text-center">
         <h1 className="text-3xl font-bold">🌿 عشبة</h1>
+
         <p className="mt-2 text-sm text-green-100">لوحة التحكم</p>
       </div>
 
@@ -65,13 +68,22 @@ function Sidebar() {
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `mb-3 flex items-center gap-3 rounded-xl px-4 py-3 transition ${
+              `mb-3 flex items-center justify-between rounded-xl px-4 py-3 transition ${
                 isActive ? "bg-white text-green-700" : "hover:bg-green-600"
               }`
             }
           >
-            <span className="text-lg">{item.icon}</span>
-            <span>{item.name}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-lg">{item.icon}</span>
+
+              <span>{item.name}</span>
+            </div>
+
+            {item.badge > 0 && (
+              <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-red-500 px-2 text-xs text-white animate-pulse">
+                {item.badge}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
@@ -79,7 +91,7 @@ function Sidebar() {
       <div className="border-t border-green-600 p-4">
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 hover:bg-red-500"
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-red-500"
         >
           <FaSignOutAlt />
           تسجيل الخروج

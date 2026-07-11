@@ -8,6 +8,8 @@ import { WishlistProvider } from "./context/WishlistContext.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { OrderProvider } from "./context/OrderContext.jsx";
 import { SettingsProvider } from "./context/SettingsContext.jsx";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -18,6 +20,7 @@ createRoot(document.getElementById("root")).render(
             <WishlistProvider>
               <OrderProvider>
                 <App />
+                <ToastContainer position="top-left" rtl autoClose={5000} />
               </OrderProvider>
             </WishlistProvider>
           </CartProvider>
