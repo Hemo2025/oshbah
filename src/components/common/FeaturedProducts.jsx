@@ -13,7 +13,7 @@ function FeaturedProducts() {
 
   const [addedId, setAddedId] = useState(null);
 
-  const featured = products.slice(0, 4);
+  const featured = products.slice(0, 8);
 
   const handleAddToCart = (e, product) => {
     e.preventDefault();
@@ -48,12 +48,21 @@ function FeaturedProducts() {
         {featured.length === 0 ? (
           <p className="text-center text-gray-500">لا توجد منتجات بعد.</p>
         ) : (
-          <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {featured.map((product) => (
               <Link
                 key={product.id}
                 to={`/product/${product.slug}`}
-                className="group relative overflow-hidden rounded-3xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                className="
+group relative overflow-hidden
+rounded-[28px]
+border border-gray-100
+bg-white
+shadow-sm
+transition-all duration-500
+hover:-translate-y-2
+hover:shadow-2xl
+"
               >
                 {/* مفضلة */}
                 <button
@@ -77,7 +86,15 @@ function FeaturedProducts() {
                   <img
                     src={product.images?.[0]}
                     alt={product.name}
-                    className="h-56 w-full object-cover transition duration-500 group-hover:scale-110 md:h-72"
+                    className="
+h-44
+w-full
+object-cover
+transition duration-700
+group-hover:scale-110
+sm:h-52
+md:h-64
+"
                   />
                 </div>
 
