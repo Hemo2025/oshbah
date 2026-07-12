@@ -40,30 +40,38 @@ export default function Checkout() {
 
     const newErrors = validate();
     setErrors(newErrors);
+
     if (Object.keys(newErrors).length > 0) return;
 
     setSubmitting(true);
 
-    const order = await createOrder({
-      customer,
-      items: cartItems.map((item) => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.images?.[0] || "",
-      })),
-      total: cartTotal,
-    });
+    try {
+      const order = await createOrder({
+        customer,
+        items: cartItems.map((item) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.images?.[0] || "",
+        })),
+        total: cartTotal,
+      });
 
-    // Mark the order as placed BEFORE clearing the cart, so the empty-cart
-    // guard above doesn't race with clearCart() and redirect back to /cart.
-    setOrderPlaced(true);
-    clearCart();
-    navigate(`/order-confirmation/${order.orderNumber}`, {
-      replace: true,
-      state: { order },
-    });
+      setOrderPlaced(true);
+      clearCart();
+
+      navigate(`/order-confirmation/${order.orderNumber}`, {
+        replace: true,
+        state: { order },
+      });
+    } catch (error) {
+      console.error("Create Order Error:", error);
+
+      alert("حدث خطأ أثناء تأكيد الطلب، حاول مرة أخرى");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
