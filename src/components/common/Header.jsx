@@ -19,10 +19,17 @@ function Header() {
   const { wishlistCount } = useWishlist();
   const { categories } = useStore();
   const location = useLocation();
-  const [isClosing, setIsClosing] = useState(false);
+
   const [searchInput, setSearchInput] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  useEffect(() => {
+    if (menuOpen) {
+      setTimeout(() => {
+        setDrawerVisible(true);
+      }, 10);
+    }
+  }, [menuOpen]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,12 +41,11 @@ function Header() {
   }, [menuOpen]);
 
   const closeMenu = () => {
-    setIsClosing(true);
+    setDrawerVisible(false);
 
     setTimeout(() => {
       setMenuOpen(false);
-      setIsClosing(false);
-    }, 250);
+    }, 300);
   };
 
   const handleSearchSubmit = (e) => {
@@ -65,7 +71,10 @@ function Header() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           {/* Mobile menu button */}
           <button
-            onClick={() => setMenuOpen(true)}
+            onClick={() => {
+              setMenuOpen(true);
+              setDrawerVisible(false);
+            }}
             className="text-2xl text-gray-700 md:hidden"
             aria-label="فتح القائمة"
           >
@@ -222,7 +231,12 @@ function Header() {
         <div className="fixed inset-0 z-[2147483647] md:hidden">
           <div
             onClick={closeMenu}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-all duration-300"
+            className={`
+absolute inset-0
+backdrop-blur-sm
+transition-all duration-300
+${drawerVisible ? "bg-black/50 opacity-100" : "bg-black/0 opacity-0"}
+`}
           />
 
           <div
@@ -235,7 +249,7 @@ bg-white
 shadow-2xl
 rounded-l-3xl
 transition-all duration-300 ease-out
-${isClosing ? "translate-x-full opacity-0" : "translate-x-0 opacity-100"}
+${drawerVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}
 `}
           >
             <div className="flex items-center justify-between border-b p-5">
