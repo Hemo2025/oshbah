@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaSave, FaTimes, FaPlus, FaTrash } from "react-icons/fa";
+import { FaSave, FaTimes, FaPlus, FaTrash, FaImage } from "react-icons/fa";
 
 import Sidebar from "../components/admin/Sidebar";
 import Header from "../components/admin/Header";
@@ -16,7 +16,7 @@ const emptyProduct = {
   description: "",
   usage: "",
   ingredients: [""],
-  images: [""],
+  images: [],
 };
 
 function ProductForm() {
@@ -35,9 +35,11 @@ function ProductForm() {
         ingredients: existingProduct.ingredients?.length
           ? existingProduct.ingredients
           : [""],
-        images: existingProduct.images?.length ? existingProduct.images : [""],
+
+        images: existingProduct.images?.length ? existingProduct.images : [],
       };
     }
+
     return emptyProduct;
   });
 
@@ -47,16 +49,12 @@ function ProductForm() {
     return (
       <div className="flex min-h-screen bg-gray-100">
         <Sidebar />
+
         <main className="flex-1 p-8">
           <Header />
-          <div className="mt-8 rounded-2xl bg-white p-10 text-center shadow">
-            <p className="text-lg text-gray-600">المنتج غير موجود.</p>
-            <button
-              onClick={() => navigate("/admin/products")}
-              className="mt-4 rounded-xl bg-green-600 px-6 py-3 text-white hover:bg-green-700"
-            >
-              العودة لقائمة المنتجات
-            </button>
+
+          <div className="mt-10 rounded-3xl bg-white p-10 shadow">
+            المنتج غير موجود
           </div>
         </main>
       </div>
@@ -64,55 +62,100 @@ function ProductForm() {
   }
 
   const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    if (field === "name") {
+      setForm((prev) => ({
+        ...prev,
+        name: value,
+        slug: value.toLowerCase().trim().replace(/\s+/g, "-"),
+      }));
+
+      return;
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleListChange = (field, index, value) => {
     setForm((prev) => {
-      const list = [...prev[field]];
-      list[index] = value;
-      return { ...prev, [field]: list };
+      const arr = [...prev[field]];
+
+      arr[index] = value;
+
+      return {
+        ...prev,
+        [field]: arr,
+      };
     });
   };
 
   const addListItem = (field) => {
-    setForm((prev) => ({ ...prev, [field]: [...prev[field], ""] }));
+    setForm((prev) => ({
+      ...prev,
+      [field]: [...prev[field], ""],
+    }));
   };
 
   const removeListItem = (field, index) => {
     setForm((prev) => {
-      const list = prev[field].filter((_, i) => i !== index);
-      return { ...prev, [field]: list.length ? list : [""] };
+      const arr = prev[field].filter((_, i) => i !== index);
+
+      return {
+        ...prev,
+        [field]: arr.length > 0 ? arr : [""],
+      };
     });
   };
-  const handleFileUpload = (index, file) => {
-    if (!file) return;
 
-    const reader = new FileReader();
+  const handleImages = async (files) => {
+    if (!files?.length) return;
 
-    reader.onloadend = () => {
-      handleListChange("images", index, reader.result);
-    };
+    const fileArray = Array.from(files);
 
-    reader.readAsDataURL(file);
+    const images = await Promise.all(
+      fileArray.map(
+        (file) =>
+          new Promise((resolve) => {
+            const reader = new FileReader();
+
+            reader.onloadend = () => resolve(reader.result);
+
+            reader.readAsDataURL(file);
+          }),
+      ),
+    );
+
+    setForm((prev) => ({
+      ...prev,
+      images: [...prev.images, ...images],
+    }));
+  };
+
+  const removeImage = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     setError("");
 
     if (!form.name.trim() || !form.price || !form.category) {
-      setError("الاسم والسعر والتصنيف حقول إلزامية.");
+      setError("يرجى تعبئة الحقول المطلوبة");
       return;
     }
 
     const payload = {
       ...form,
       price: Number(form.price),
-      oldPrice: form.oldPrice ? Number(form.oldPrice) : undefined,
+      oldPrice: form.oldPrice ? Number(form.oldPrice) : null,
       stock: Number(form.stock) || 0,
-      ingredients: form.ingredients.filter((i) => i.trim() !== ""),
-      images: form.images.filter((i) => i.trim() !== ""),
+      ingredients: form.ingredients.filter((i) => i.trim()),
     };
 
     if (isEditing) {
@@ -131,248 +174,205 @@ function ProductForm() {
       <main className="flex-1 p-8">
         <Header />
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-8 rounded-2xl bg-white p-8 shadow"
-        >
-          <h2 className="mb-6 text-3xl font-bold">
-            {isEditing ? "تعديل منتج" : "إضافة منتج جديد"}
-          </h2>
+        <form onSubmit={handleSubmit} className="mt-8">
+          <div className="rounded-3xl bg-white p-8 shadow-lg">
+            <h1 className="mb-8 text-3xl font-bold">
+              {isEditing ? "تعديل المنتج" : "إضافة منتج جديد"}
+            </h1>
 
-          {error && (
-            <div className="mb-6 rounded-xl bg-red-100 p-4 text-red-700">
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="mb-6 rounded-2xl bg-red-100 p-4 text-red-600">
+                {error}
+              </div>
+            )}
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <label className="mb-2 block font-semibold text-gray-700">
-                اسم المنتج *
-              </label>
-              <input
-                type="text"
-                value={form.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                placeholder="مثال: عسل السدر اليمني"
-              />
-            </div>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block font-semibold">اسم المنتج *</label>
 
-            <div>
-              <label className="mb-2 block font-semibold text-gray-700">
-                التصنيف *
-              </label>
-              <select
-                value={form.category}
-                onChange={(e) => handleChange("category", e.target.value)}
-                className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-              >
-                <option value="">اختر تصنيف</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.name}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="mb-2 block font-semibold text-gray-700">
-                السعر (ر.س) *
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.price}
-                onChange={(e) => handleChange("price", e.target.value)}
-                className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block font-semibold text-gray-700">
-                السعر قبل الخصم (اختياري)
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.oldPrice || ""}
-                onChange={(e) => handleChange("oldPrice", e.target.value)}
-                className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block font-semibold text-gray-700">
-                الكمية بالمخزون
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={form.stock}
-                onChange={(e) => handleChange("stock", e.target.value)}
-                className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-              />
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <label className="mb-2 block font-semibold text-gray-700">
-              الوصف
-            </label>
-            <textarea
-              value={form.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-              rows={4}
-              className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-            />
-          </div>
-
-          <div className="mt-6">
-            <label className="mb-2 block font-semibold text-gray-700">
-              طريقة الاستخدام
-            </label>
-            <textarea
-              value={form.usage}
-              onChange={(e) => handleChange("usage", e.target.value)}
-              rows={2}
-              className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-            />
-          </div>
-
-          {/* Ingredients list */}
-          <div className="mt-6">
-            <label className="mb-2 block font-semibold text-gray-700">
-              المكونات
-            </label>
-            {form.ingredients.map((ing, index) => (
-              <div key={index} className="mb-2 flex gap-2">
                 <input
                   type="text"
-                  value={ing}
-                  onChange={(e) =>
-                    handleListChange("ingredients", index, e.target.value)
-                  }
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                  placeholder="مكوّن"
+                  value={form.name}
+                  onChange={(e) => handleChange("name", e.target.value)}
+                  className="w-full rounded-2xl border p-4 outline-none focus:border-green-600"
                 />
-                <button
-                  type="button"
-                  onClick={() => removeListItem("ingredients", index)}
-                  className="rounded-xl bg-red-500 px-4 text-white hover:bg-red-600"
-                >
-                  <FaTrash />
-                </button>
               </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => addListItem("ingredients")}
-              className="mt-1 flex items-center gap-2 text-sm font-medium text-green-700 hover:underline"
-            >
-              <FaPlus /> إضافة مكوّن
-            </button>
-          </div>
 
-          {/* Images list */}
-          <div className="mt-6">
-            <label className="mb-3 block font-semibold text-gray-700">
-              صور المنتج
-            </label>
-            {form.images.map((img, index) => (
-              <div
-                key={index}
-                className="mb-4 rounded-2xl border bg-gray-50 p-4"
-              >
-                <div className="flex flex-col gap-3 md:flex-row">
+              <div>
+                <label className="mb-2 block font-semibold">التصنيف *</label>
+
+                <select
+                  value={form.category}
+                  onChange={(e) => handleChange("category", e.target.value)}
+                  className="w-full rounded-2xl border p-4 outline-none focus:border-green-600"
+                >
+                  <option value="">اختر التصنيف</option>
+
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block font-semibold">السعر</label>
+
+                <input
+                  type="number"
+                  value={form.price}
+                  onChange={(e) => handleChange("price", e.target.value)}
+                  className="w-full rounded-2xl border p-4"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block font-semibold">
+                  السعر قبل الخصم
+                </label>
+
+                <input
+                  type="number"
+                  value={form.oldPrice}
+                  onChange={(e) => handleChange("oldPrice", e.target.value)}
+                  className="w-full rounded-2xl border p-4"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block font-semibold">الكمية</label>
+
+                <input
+                  type="number"
+                  value={form.stock}
+                  onChange={(e) => handleChange("stock", e.target.value)}
+                  className="w-full rounded-2xl border p-4"
+                />
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <label className="mb-2 block font-semibold">الوصف</label>
+
+              <textarea
+                rows={5}
+                value={form.description}
+                onChange={(e) => handleChange("description", e.target.value)}
+                className="w-full rounded-2xl border p-4"
+              />
+            </div>
+
+            <div className="mt-8">
+              <label className="mb-2 block font-semibold">
+                طريقة الاستخدام
+              </label>
+
+              <textarea
+                rows={3}
+                value={form.usage}
+                onChange={(e) => handleChange("usage", e.target.value)}
+                className="w-full rounded-2xl border p-4"
+              />
+            </div>
+
+            <div className="mt-8">
+              <label className="mb-4 block font-semibold">المكونات</label>
+
+              {form.ingredients.map((item, index) => (
+                <div key={index} className="mb-3 flex gap-3">
                   <input
                     type="text"
-                    value={img}
+                    value={item}
                     onChange={(e) =>
-                      handleListChange("images", index, e.target.value)
+                      handleListChange("ingredients", index, e.target.value)
                     }
-                    className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                    placeholder="https://example.com/image.jpg"
+                    className="w-full rounded-2xl border p-4"
                   />
 
                   <button
                     type="button"
-                    onClick={() => removeListItem("images", index)}
-                    className="rounded-xl bg-red-500 px-4 text-white hover:bg-red-600"
+                    onClick={() => removeListItem("ingredients", index)}
+                    className="rounded-2xl bg-red-500 px-5 text-white"
                   >
                     <FaTrash />
                   </button>
                 </div>
+              ))}
 
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <label className="cursor-pointer rounded-xl bg-blue-600 px-5 py-3 text-white hover:bg-blue-700">
-                    📷 رفع صورة
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) =>
-                        handleFileUpload(index, e.target.files[0])
-                      }
-                    />
-                  </label>
+              <button
+                type="button"
+                onClick={() => addListItem("ingredients")}
+                className="mt-2 flex items-center gap-2 text-green-700"
+              >
+                <FaPlus />
+                إضافة مكون
+              </button>
+            </div>
 
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        const text = await navigator.clipboard.readText();
+            <div className="mt-10">
+              <label className="mb-4 block text-lg font-semibold">
+                صور المنتج
+              </label>
 
-                        handleListChange("images", index, text);
-                      } catch {
-                        alert("تعذر الوصول إلى الحافظة");
-                      }
-                    }}
-                    className="rounded-xl bg-green-600 px-5 py-3 text-white hover:bg-green-700"
-                  >
-                    📋 لصق رابط
-                  </button>
+              <label className="flex h-44 cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-green-400 bg-green-50 hover:bg-green-100">
+                <FaImage className="mb-3 text-5xl text-green-600" />
+
+                <span>اضغط لرفع الصور</span>
+
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleImages(e.target.files)}
+                />
+              </label>
+
+              {form.images.length > 0 && (
+                <div className="mt-6 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {form.images.map((image, index) => (
+                    <div
+                      key={index}
+                      className="relative overflow-hidden rounded-3xl shadow"
+                    >
+                      <img
+                        src={image}
+                        alt=""
+                        className="h-52 w-full object-cover"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute right-3 top-3 rounded-full bg-red-500 p-3 text-white"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  ))}
                 </div>
+              )}
+            </div>
 
-                {img && (
-                  <div className="mt-4">
-                    <img
-                      src={img}
-                      alt="preview"
-                      className="h-40 w-40 rounded-xl border object-cover shadow"
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+            <div className="mt-10 flex gap-4">
+              <button
+                type="submit"
+                className="flex items-center gap-2 rounded-2xl bg-green-600 px-8 py-4 text-white hover:bg-green-700"
+              >
+                <FaSave />
+                {isEditing ? "حفظ التعديلات" : "إضافة المنتج"}
+              </button>
 
-            <button
-              type="button"
-              onClick={() => addListItem("images")}
-              className="mt-1 flex items-center gap-2 text-sm font-medium text-green-700 hover:underline"
-            >
-              <FaPlus /> إضافة رابط صورة
-            </button>
-          </div>
-
-          <div className="mt-8 flex gap-4">
-            <button
-              type="submit"
-              className="flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 text-white hover:bg-green-700"
-            >
-              <FaSave /> {isEditing ? "حفظ التعديلات" : "إضافة المنتج"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate("/admin/products")}
-              className="flex items-center gap-2 rounded-xl bg-gray-200 px-6 py-3 text-gray-700 hover:bg-gray-300"
-            >
-              <FaTimes /> إلغاء
-            </button>
+              <button
+                type="button"
+                onClick={() => navigate("/admin/products")}
+                className="flex items-center gap-2 rounded-2xl bg-gray-200 px-8 py-4"
+              >
+                <FaTimes />
+                إلغاء
+              </button>
+            </div>
           </div>
         </form>
       </main>

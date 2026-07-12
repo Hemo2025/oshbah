@@ -1,79 +1,150 @@
 import { useState } from "react";
-import { FaShoppingCart, FaCheck, FaMinus, FaPlus, FaHeart } from "react-icons/fa";
+import {
+  FaShoppingCart,
+  FaCheck,
+  FaMinus,
+  FaPlus,
+  FaHeart,
+  
+} from "react-icons/fa";
+
 import { useCart } from "../../hooks/useCart";
 import { useWishlist } from "../../hooks/useWishlist";
 
 function ProductActions({ product }) {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+
   const [quantity, setQuantity] = useState(1);
+
   const [added, setAdded] = useState(false);
 
   const outOfStock = !product.stock || product.stock <= 0;
+
   const inWishlist = isInWishlist(product.id);
 
   const decrease = () => setQuantity((q) => Math.max(1, q - 1));
+
   const increase = () =>
     setQuantity((q) => Math.min(product.stock || 99, q + 1));
 
   const handleAddToCart = () => {
     if (outOfStock) return;
+
     addToCart(product, quantity);
+
     setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
+
+    setTimeout(() => {
+      setAdded(false);
+    }, 1500);
   };
 
   return (
-    <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-      <div className="flex items-center overflow-hidden rounded-xl border">
+    <div className="mt-10 rounded-3xl border border-green-100 bg-green-50 p-6">
+      {/* Quantity */}
+      <div className="mb-6">
+        <p className="mb-3 font-bold text-gray-700">الكمية المطلوبة</p>
+
+        <div className="flex w-fit items-center overflow-hidden rounded-2xl border bg-white shadow-sm">
+          <button
+            onClick={decrease}
+            disabled={outOfStock}
+            className="
+              px-5 py-4 text-gray-600
+              transition hover:bg-gray-100
+              disabled:opacity-40
+            "
+          >
+            <FaMinus />
+          </button>
+
+          <span className="min-w-[70px] text-center text-xl font-bold">
+            {quantity}
+          </span>
+
+          <button
+            onClick={increase}
+            disabled={outOfStock}
+            className="
+              px-5 py-4 text-gray-600
+              transition hover:bg-gray-100
+              disabled:opacity-40
+            "
+          >
+            <FaPlus />
+          </button>
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div className="flex flex-col gap-4 sm:flex-row">
+        {/* Cart */}
         <button
-          onClick={decrease}
+          onClick={handleAddToCart}
           disabled={outOfStock}
-          className="px-4 py-3 text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+          className={`
+            flex flex-1 items-center justify-center gap-3
+            rounded-2xl py-4 text-lg font-bold
+            text-white shadow-lg transition-all duration-300
+            disabled:cursor-not-allowed
+            disabled:bg-gray-300
+
+            ${
+              added
+                ? "bg-green-800"
+                : "bg-green-600 hover:-translate-y-1 hover:bg-green-700"
+            }
+          `}
         >
-          <FaMinus />
+          {added ? (
+            <>
+              <FaCheck />
+              تمت الإضافة
+            </>
+          ) : (
+            <>
+              <FaShoppingCart />
+              أضف إلى السلة
+            </>
+          )}
         </button>
 
-        <span className="w-12 text-center font-semibold">{quantity}</span>
-
+        {/* Wishlist */}
         <button
-          onClick={increase}
-          disabled={outOfStock}
-          className="px-4 py-3 text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+          onClick={() => toggleWishlist(product.id)}
+          className={`
+            flex items-center justify-center gap-3
+            rounded-2xl px-6 py-4
+            font-bold transition-all duration-300
+
+            ${
+              inWishlist
+                ? "bg-red-500 text-white shadow-lg"
+                : "border bg-white text-gray-600 hover:border-red-300 hover:text-red-500"
+            }
+          `}
         >
-          <FaPlus />
+          <FaHeart />
+
+          {inWishlist ? "في المفضلة" : "المفضلة"}
         </button>
       </div>
 
-      <button
-        onClick={handleAddToCart}
-        disabled={outOfStock}
-        className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-lg font-semibold text-white transition disabled:cursor-not-allowed disabled:bg-gray-300 ${
-          added ? "bg-green-800" : "bg-green-600 hover:bg-green-700"
-        }`}
-      >
-        {added ? (
-          <>
-            <FaCheck /> أُضيف للسلة
-          </>
-        ) : (
-          <>
-            <FaShoppingCart /> أضف للسلة
-          </>
-        )}
-      </button>
+      {/* Quick Buy */}
 
-      <button
-        onClick={() => toggleWishlist(product.id)}
-        className={`flex items-center justify-center gap-2 rounded-xl border px-6 py-3 font-semibold transition ${
-          inWishlist
-            ? "border-red-500 bg-red-50 text-red-500"
-            : "border-gray-300 text-gray-500 hover:border-red-300 hover:text-red-500"
-        }`}
-      >
-        <FaHeart />
-        {inWishlist ? "بالمفضلة" : "أضف للمفضلة"}
-      </button>
+      {/* Stock Warning */}
+      {product.stock > 0 && product.stock <= 5 && (
+        <div className="mt-5 rounded-2xl bg-orange-100 p-4 text-center font-semibold text-orange-700">
+          ⚠️ متبقي فقط {product.stock} قطع
+        </div>
+      )}
+
+      {outOfStock && (
+        <div className="mt-5 rounded-2xl bg-red-100 p-4 text-center font-semibold text-red-600">
+          ❌ المنتج غير متوفر حالياً
+        </div>
+      )}
     </div>
   );
 }

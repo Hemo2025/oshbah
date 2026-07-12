@@ -30,9 +30,9 @@ function Footer() {
         <div>
           <h3 className="mb-5 text-xl font-bold">تواصل معنا</h3>
 
-          <p className="text-gray-400">Riyadh, Saudi Arabia</p>
+          <p className="text-gray-400">KSA - TURKIA</p>
 
-          <p className="mt-2 text-gray-400">support@oshbah.com</p>
+          <p className="mt-2 text-gray-400">oshbahstore@gmail.com</p>
         </div>
       </div>
 
