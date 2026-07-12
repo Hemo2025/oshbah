@@ -86,10 +86,10 @@ function Dashboard() {
   const latestOrders = [...orders].reverse().slice(0, 5);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen overflow-x-hidden bg-gray-100">
       <Sidebar newOrdersCount={newOrdersCount} />
 
-      <main className="flex-1 p-8">
+      <main className="min-w-0 flex-1 p-4 md:p-6 lg:p-8">
         <Header />
 
         {newOrdersCount > 0 && (
@@ -114,7 +114,15 @@ function Dashboard() {
         )}
 
         {/* الإحصائيات */}
-        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div
+          className="
+    mt-8 grid
+    grid-cols-1
+    gap-4
+    sm:grid-cols-2
+    xl:grid-cols-4
+  "
+        >
           <div className="rounded-3xl bg-white p-6 shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -181,7 +189,14 @@ function Dashboard() {
         </div>
 
         {/* إحصائيات ثانوية */}
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
+        <div
+          className="
+    mt-6 grid
+    grid-cols-1
+    gap-4
+    md:grid-cols-2
+  "
+        >
           <div className="rounded-3xl bg-white p-6 shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -210,7 +225,14 @@ function Dashboard() {
             </div>
           </div>
         </div>
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <div
+          className="
+    mt-8 grid
+    grid-cols-1
+    gap-6
+    xl:grid-cols-2
+  "
+        >
           <div className="rounded-3xl bg-white p-6 shadow">
             <h3 className="mb-5 text-xl font-bold">أحدث المنتجات</h3>
 
@@ -218,7 +240,13 @@ function Dashboard() {
               {latestProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="flex items-center justify-between border-b pb-3"
+                  className="
+flex flex-col gap-3
+border-b pb-3
+sm:flex-row
+sm:items-center
+sm:justify-between
+"
                 >
                   <div>
                     <p className="font-semibold">{product.name}</p>
@@ -247,7 +275,13 @@ function Dashboard() {
               latestOrders.map((order) => (
                 <div
                   key={order.id}
-                  className="flex items-center justify-between border-b pb-3"
+                  className="
+flex flex-col gap-3
+border-b pb-3
+sm:flex-row
+sm:items-center
+sm:justify-between
+"
                 >
                   <div>
                     <p className="font-semibold">

@@ -10,7 +10,7 @@ export default function WhatsAppButton({ order }) {
     const message = `
 السلام عليكم ${order.customer.name}
 
-شكراً لطلبك من متجر عُشبة
+شكراً لطلبك من عُشبة ستور
 
 تم استلام طلبك بنجاح.
 
