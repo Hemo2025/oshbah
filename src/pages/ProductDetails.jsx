@@ -9,9 +9,45 @@ import ProductActions from "../components/product/ProductActions";
 function ProductDetails() {
   const { slug } = useParams();
 
-  const { products, getProductBySlug } = useStore();
+  // لو عندك isLoading/status جاهز في الـ store، استبدل بيه السطر ده
+  const { products, getProductBySlug, isLoading } = useStore();
 
   const product = getProductBySlug(slug);
+
+  // حالة التحميل: لسه المنتجات ما وصلتش من الـ store
+  const isStoreLoading = isLoading ?? products.length === 0;
+
+  if (isStoreLoading) {
+    return (
+      <section className="bg-gradient-to-b from-green-50 via-white to-green-50 py-16">
+        <div className="mx-auto max-w-7xl animate-pulse px-5">
+          <div className="mb-8 h-4 w-48 rounded bg-gray-200" />
+
+          <div className="overflow-hidden rounded-[35px] bg-white shadow-2xl">
+            <div className="grid lg:grid-cols-2">
+              <div className="bg-gradient-to-br from-green-50 to-white p-6 lg:p-10">
+                <div className="aspect-square w-full rounded-3xl bg-gray-200" />
+              </div>
+
+              <div className="p-6 lg:p-10">
+                <div className="mb-4 h-8 w-3/4 rounded bg-gray-200" />
+                <div className="mb-8 h-6 w-1/3 rounded bg-gray-200" />
+
+                <div className="my-8 h-px bg-gray-200" />
+
+                <div className="mb-8 grid grid-cols-2 gap-4">
+                  <div className="h-28 rounded-2xl bg-gray-200" />
+                  <div className="h-28 rounded-2xl bg-gray-200" />
+                </div>
+
+                <div className="h-14 w-full rounded-2xl bg-gray-200" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (!product) {
     return (
@@ -22,7 +58,7 @@ function ProductDetails() {
           </h2>
 
           <Link
-            to="/shop"
+            to="/"
             className="rounded-2xl bg-green-600 px-6 py-3 text-white transition hover:bg-green-700"
           >
             العودة للمتجر
