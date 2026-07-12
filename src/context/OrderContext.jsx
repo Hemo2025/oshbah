@@ -156,7 +156,6 @@ export function OrderProvider({ children }) {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myOrderNumbers]);
 
   // إنشاء طلب: يولّد رقم الطلب بأمان عبر عدّاد Firestore، ويحفظ
