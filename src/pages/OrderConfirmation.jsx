@@ -1,14 +1,52 @@
-import { Link, useParams, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams, useLocation, Navigate } from "react-router-dom";
 import { FaCheckCircle } from "react-icons/fa";
 import { useOrders } from "../hooks/useOrders";
 
 export default function OrderConfirmation() {
   const { orderNumber } = useParams();
-  const { getOrderByNumber } = useOrders();
+  const location = useLocation();
+  const { fetchOrderByNumber } = useOrders();
 
-  const order = getOrderByNumber(orderNumber);
+  // أسرع مسار: الطلب يوصلنا مباشرة من صفحة الدفع نفسها بدون أي
+  // قراءة إضافية من Firestore.
+  const [order, setOrder] = useState(location.state?.order || null);
+  const [loading, setLoading] = useState(!location.state?.order);
+  const [notFound, setNotFound] = useState(false);
 
-  if (!order) {
+  useEffect(() => {
+    // لو الطلب موجود أصلاً (جاي من صفحة الدفع) ما نحتاج نجيبه من جديد
+    if (order) return;
+
+    let cancelled = false;
+
+    fetchOrderByNumber(orderNumber).then((result) => {
+      if (cancelled) return;
+
+      if (result) {
+        setOrder(result);
+      } else {
+        setNotFound(true);
+      }
+
+      setLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderNumber]);
+
+  if (loading) {
+    return (
+      <section className="bg-green-50 py-20 text-center text-gray-500">
+        جارٍ تحميل بيانات الطلب...
+      </section>
+    );
+  }
+
+  if (notFound || !order) {
     return <Navigate to="/" replace />;
   }
 

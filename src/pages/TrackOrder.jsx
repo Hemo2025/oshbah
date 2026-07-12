@@ -78,16 +78,19 @@ function OrderCard({ order }) {
 }
 
 export default function TrackOrder() {
-  const { myOrders, findOrder } = useOrders();
+  const { myOrders, myOrdersLoading, findOrder } = useOrders();
 
   const [orderNumber, setOrderNumber] = useState("");
   const [phone, setPhone] = useState("");
   const [searchResult, setSearchResult] = useState(undefined); // undefined = no search yet, null = not found
+  const [searching, setSearching] = useState(false);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    const result = findOrder(orderNumber, phone);
+    setSearching(true);
+    const result = await findOrder(orderNumber, phone);
     setSearchResult(result);
+    setSearching(false);
   };
 
   return (
@@ -126,9 +129,10 @@ export default function TrackOrder() {
 
           <button
             type="submit"
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 py-3 text-white transition hover:bg-green-700"
+            disabled={searching}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 py-3 text-white transition hover:bg-green-700 disabled:opacity-60"
           >
-            <FaSearch /> بحث
+            <FaSearch /> {searching ? "جارِ البحث..." : "بحث"}
           </button>
 
           {searchResult === null && (
@@ -148,7 +152,11 @@ export default function TrackOrder() {
         <div>
           <h2 className="mb-4 font-bold text-gray-800">طلباتك من هذا الجهاز</h2>
 
-          {myOrders.length === 0 ? (
+          {myOrdersLoading ? (
+            <div className="rounded-2xl bg-white p-10 text-center text-gray-500 shadow">
+              جارٍ تحميل طلباتك...
+            </div>
+          ) : myOrders.length === 0 ? (
             <div className="rounded-2xl bg-white p-10 text-center shadow">
               <FaBoxOpen className="mx-auto mb-4 text-5xl text-gray-300" />
               <p className="text-gray-500">

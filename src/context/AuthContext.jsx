@@ -1,58 +1,59 @@
 import { useEffect, useState } from "react";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+
+import { auth } from "../firebase/config";
 import { AuthContext } from "./auth-context-instance";
 
-const AUTH_KEY = "oshbah_admin_session";
-
-// TEMPORARY local credentials until this is connected to Firebase Auth.
-// Change these, or ask to move them somewhere safer, before going live.
-const ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "admin123",
-};
-
-function loadSession() {
-  try {
-    return localStorage.getItem(AUTH_KEY) === "true";
-  } catch {
-    return false;
-  }
-}
+// ملاحظة أمنية:
+// أصبح تسجيل الدخول الآن يعتمد بالكامل على Firebase Authentication.
+// لا يوجد أي اسم مستخدم/كلمة مرور مكتوبة داخل الكود بعد الآن.
+// لإنشاء حساب المدير: افتح Firebase Console → Authentication →
+// Sign-in method → فعّل "Email/Password" → من تبويب Users أضف
+// بريد وكلمة مرور المدير يدويًا.
 
 export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(loadSession);
-  const [adminName, setAdminName] = useState(() => {
-    try {
-      return localStorage.getItem("oshbah_admin_name") || "المدير";
-    } catch {
-      return "المدير";
-    }
-  });
+  const [user, setUser] = useState(null);
+  // true أثناء تحقّق Firebase من حالة الجلسة عند أول تحميل للصفحة
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem(AUTH_KEY, String(isAuthenticated));
-  }, [isAuthenticated]);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthLoading(false);
+    });
 
-  const login = (username, password) => {
-    const trimmedUser = username.trim();
+    return () => unsubscribe();
+  }, []);
 
-    if (
-      trimmedUser === ADMIN_CREDENTIALS.username &&
-      password === ADMIN_CREDENTIALS.password
-    ) {
-      setIsAuthenticated(true);
-      setAdminName(trimmedUser);
-      localStorage.setItem("oshbah_admin_name", trimmedUser);
+  const login = async (email, password) => {
+    try {
+      await signInWithEmailAndPassword(auth, email.trim(), password);
       return { success: true };
+    } catch (err) {
+      // رسالة عامة لعدم كشف تفاصيل تفيد أي محاولة اختراق
+      // (مثل: هل البريد موجود أصلاً أم لا)
+      return {
+        success: false,
+        message: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+        code: err.code,
+      };
     }
-
-    return { success: false, message: "اسم المستخدم أو كلمة المرور غير صحيحة." };
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-  };
+  const logout = () => signOut(auth);
 
-  const value = { isAuthenticated, adminName, login, logout };
+  const value = {
+    user,
+    isAuthenticated: !!user,
+    authLoading,
+    adminName: user?.email || "المدير",
+    login,
+    logout,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

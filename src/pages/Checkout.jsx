@@ -44,7 +44,7 @@ export default function Checkout() {
 
     setSubmitting(true);
 
-    const order = await  createOrder({
+    const order = await createOrder({
       customer,
       items: cartItems.map((item) => ({
         id: item.id,
@@ -60,7 +60,10 @@ export default function Checkout() {
     // guard above doesn't race with clearCart() and redirect back to /cart.
     setOrderPlaced(true);
     clearCart();
-    navigate(`/order-confirmation/${order.orderNumber}`, { replace: true });
+    navigate(`/order-confirmation/${order.orderNumber}`, {
+      replace: true,
+      state: { order },
+    });
   };
 
   return (
