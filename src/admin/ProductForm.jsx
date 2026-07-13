@@ -5,7 +5,7 @@ import { FaSave, FaTimes, FaPlus, FaTrash, FaImage } from "react-icons/fa";
 import Sidebar from "../components/admin/Sidebar";
 import Header from "../components/admin/Header";
 import { useStore } from "../hooks/useStore";
-
+import ProductEditor from "../components/admin/ProductEditor";
 const emptyProduct = {
   name: "",
   slug: "",
@@ -255,11 +255,9 @@ function ProductForm() {
             <div className="mt-8">
               <label className="mb-2 block font-semibold">الوصف</label>
 
-              <textarea
-                rows={5}
+              <ProductEditor
                 value={form.description}
-                onChange={(e) => handleChange("description", e.target.value)}
-                className="w-full rounded-2xl border p-4"
+                onChange={(value) => handleChange("description", value)}
               />
             </div>
 

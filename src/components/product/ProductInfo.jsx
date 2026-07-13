@@ -86,7 +86,12 @@ function ProductInfo({ product }) {
         <div className="mt-10 border-t pt-8">
           <h3 className="mb-4 text-xl font-bold text-gray-800">وصف المنتج</h3>
 
-          <p className="leading-9 text-gray-600">{product.description}</p>
+          <div
+            className="product-description leading-9 text-gray-600"
+            dangerouslySetInnerHTML={{
+              __html: product.description,
+            }}
+          />
         </div>
       )}
     </div>

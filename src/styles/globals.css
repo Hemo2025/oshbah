@@ -27,3 +27,52 @@ body,
 .animate-slide-in {
     animation: slideInRight 0.3s ease-out;
 }
+
+.ProseMirror {
+    min-height: 250px;
+    direction: rtl;
+    text-align: right;
+    outline: none;
+}
+
+.ProseMirror ul {
+    list-style: disc;
+    padding-right: 20px;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+    font-weight: bold;
+}
+
+
+.product-description {
+    direction: rtl;
+    text-align: right;
+}
+
+.product-description p {
+    margin-bottom: 12px;
+}
+
+.product-description ul {
+    list-style: disc;
+    padding-right: 24px;
+}
+
+.product-description ol {
+    list-style: decimal;
+    padding-right: 24px;
+}
+
+.product-description strong {
+    font-weight: 700;
+}
+
+.product-description h1,
+.product-description h2,
+.product-description h3 {
+    font-weight: bold;
+    margin: 16px 0;
+}
