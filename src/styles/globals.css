@@ -29,23 +29,69 @@ body,
 }
 
 .ProseMirror {
-    min-height: 250px;
-    direction: rtl;
-    text-align: right;
+    min-height: 320px;
     outline: none;
+}
+
+.ProseMirror p {
+    margin: 12px 0;
+}
+
+.ProseMirror h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 20px 0;
+}
+
+
+.ProseMirror h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 18px 0;
 }
 
 .ProseMirror ul {
     list-style: disc;
-    padding-right: 20px;
+    padding-right: 30px;
 }
 
-.ProseMirror h1,
-.ProseMirror h2,
-.ProseMirror h3 {
-    font-weight: bold;
+.ProseMirror ol {
+    list-style: decimal;
+    padding-right: 30px;
 }
 
+.ProseMirror blockquote {
+    border-right: 4px solid #16a34a;
+    padding-right: 15px;
+    color: #666;
+    margin: 20px 0;
+}
+
+.ProseMirror img {
+    max-width: 100%;
+    border-radius: 16px;
+    margin: 20px auto;
+    display: block;
+}
+
+.ProseMirror a {
+    color: #16a34a;
+    text-decoration: underline;
+}
+
+.ProseMirror hr {
+    margin: 25px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: #999;
+    float: right;
+    pointer-events: none;
+    height: 0;
+}
 
 .product-description {
     direction: rtl;
@@ -75,4 +121,71 @@ body,
 .product-description h3 {
     font-weight: bold;
     margin: 16px 0;
+}
+
+.product-description h1 span {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 20px 0;
+}
+
+@keyframes cartShake {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    20% {
+        transform: scale(1.15) rotate(-15deg);
+    }
+
+    40% {
+        transform: scale(1.28) rotate(12deg);
+    }
+
+    60% {
+        transform: scale(1.2) rotate(-8deg);
+    }
+
+    80% {
+        transform: scale(1.12) rotate(5deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes cartBadge {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.45);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes cartFly {
+    0% {
+        opacity: 0;
+        transform: translateY(15px) scale(0.4);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(0px) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-45px) scale(1.4);
+    }
 }

@@ -23,6 +23,8 @@ function Header() {
   const [searchInput, setSearchInput] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [cartAnimating, setCartAnimating] = useState(false);
+  const [cartPopup, setCartPopup] = useState(null);
   useEffect(() => {
     if (menuOpen) {
       setTimeout(() => {
@@ -39,7 +41,27 @@ function Header() {
       document.body.style.overflow = "";
     };
   }, [menuOpen]);
+  useEffect(() => {
+    const handler = (e) => {
+      setCartAnimating(true);
 
+      setCartPopup(e.detail?.quantity || 1);
+
+      setTimeout(() => {
+        setCartAnimating(false);
+      }, 700);
+
+      setTimeout(() => {
+        setCartPopup(null);
+      }, 1000);
+    };
+
+    window.addEventListener("cart-animation", handler);
+
+    return () => {
+      window.removeEventListener("cart-animation", handler);
+    };
+  }, []);
   const closeMenu = () => {
     setDrawerVisible(false);
 
@@ -191,33 +213,58 @@ function Header() {
               to="/cart"
               title="السلة"
               className="
-      relative
-      flex h-11 w-11 items-center justify-center
-      rounded-full
-      text-gray-700
-      transition-all duration-300
-      hover:bg-green-50
-      hover:text-green-600
-      hover:shadow-md
-      active:scale-90
-    "
+    relative
+    flex h-11 w-11 items-center justify-center
+    rounded-full
+    text-gray-700
+    transition-all duration-300
+    hover:bg-green-50
+    hover:text-green-600
+    hover:shadow-md
+    active:scale-90
+  "
             >
-              <FaShoppingCart />
+              {cartPopup && (
+                <span
+                  className="
+        absolute -top-7 right-0
+        z-50
+        rounded-full
+        bg-green-600
+        px-2 py-1
+        text-xs
+        font-bold
+        text-white
+        pointer-events-none
+        animate-[cartFly_1s_ease]
+      "
+                >
+                  +{cartPopup}
+                </span>
+              )}
+
+              <FaShoppingCart
+                className={`
+    transition-all duration-500
+    ${cartAnimating ? "animate-[cartShake_800ms_cubic-bezier(.22,1,.36,1)]" : ""}
+  `}
+              />
 
               {cartCount > 0 && (
                 <span
-                  className="
-          absolute -right-1 -top-1
-          flex min-h-[20px] min-w-[20px]
-          items-center justify-center
-          rounded-full
-          bg-green-600
-          px-1
-          text-[11px]
-          font-bold
-          text-white
-          shadow-md
-        "
+                  className={`
+    absolute -right-1 -top-1
+    flex min-h-[20px] min-w-[20px]
+    items-center justify-center
+    rounded-full
+    bg-green-600
+    px-1
+    text-[11px]
+    font-bold
+    text-white
+    shadow-md
+    ${cartAnimating ? "animate-[cartBadge_600ms_ease]" : ""}
+  `}
                 >
                   {cartCount}
                 </span>

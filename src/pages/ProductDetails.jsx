@@ -1,17 +1,27 @@
 import { Link, useParams } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
 import { useStore } from "../hooks/useStore";
-
+import { useEffect, useState } from "react";
 import ProductGallery from "../components/product/ProductGallery";
 import ProductInfo from "../components/product/ProductInfo";
 import ProductActions from "../components/product/ProductActions";
-
+import { useCart } from "../hooks/useCart";
 function ProductDetails() {
   const { slug } = useParams();
+  const [showFloatingProduct, setShowFloatingProduct] = useState(false);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowFloatingProduct(window.scrollY > 500);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   // لو عندك isLoading/status جاهز في الـ store، استبدل بيه السطر ده
   const { products, getProductBySlug, isLoading } = useStore();
-
+  const { addToCart } = useCart();
   const product = getProductBySlug(slug);
 
   // حالة التحميل: لسه المنتجات ما وصلتش من الـ store
@@ -195,6 +205,43 @@ function ProductDetails() {
           </div>
         )}
       </div>
+      {showFloatingProduct && (
+        <div
+          className="
+      fixed bottom-4 left-1/2 z-50
+      w-[95%] max-w-md
+      -translate-x-1/2
+      rounded-2xl bg-white p-3
+      shadow-2xl
+      animate-[fadeIn_.3s]
+    "
+        >
+          <div className="flex items-center gap-3">
+            <img
+              src={product.images?.[0]}
+              alt={product.name}
+              className="h-16 w-16 rounded-xl object-cover"
+            />
+
+            <div className="flex-1 overflow-hidden">
+              <h3 className="truncate font-bold">{product.name}</h3>
+
+              <p className="font-bold text-green-600">{product.price} ر.س</p>
+            </div>
+
+            <button
+              onClick={() => addToCart(product)}
+              className="
+    rounded-xl bg-green-600
+    px-4 py-2 text-white
+    hover:bg-green-700
+  "
+            >
+              أضف للسلة
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

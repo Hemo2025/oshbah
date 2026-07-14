@@ -5,7 +5,6 @@ import {
   FaMinus,
   FaPlus,
   FaHeart,
-  
 } from "react-icons/fa";
 
 import { useCart } from "../../hooks/useCart";
@@ -33,6 +32,13 @@ function ProductActions({ product }) {
 
     addToCart(product, quantity);
 
+    window.dispatchEvent(
+      new CustomEvent("cart-animation", {
+        detail: {
+          quantity,
+        },
+      }),
+    );
     setAdded(true);
 
     setTimeout(() => {
@@ -90,11 +96,11 @@ function ProductActions({ product }) {
             disabled:cursor-not-allowed
             disabled:bg-gray-300
 
-            ${
-              added
-                ? "bg-green-800"
-                : "bg-green-600 hover:-translate-y-1 hover:bg-green-700"
-            }
+         ${
+           added
+             ? "bg-green-800 scale-105 animate-pulse"
+             : "bg-green-600 hover:-translate-y-1 hover:bg-green-700"
+         }
           `}
         >
           {added ? (

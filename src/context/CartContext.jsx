@@ -25,6 +25,13 @@ export function CartProvider({ children }) {
   }, [cartLines]);
 
   const addToCart = (product, quantity = 1) => {
+    window.dispatchEvent(
+      new CustomEvent("cart-animation", {
+        detail: {
+          quantity,
+        },
+      }),
+    );
     setCartLines((prev) => {
       const existing = prev.find((line) => line.productId === product.id);
 
@@ -85,7 +92,5 @@ export function CartProvider({ children }) {
     clearCart,
   };
 
-  return (
-    <CartContext.Provider value={value}>{children}</CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
