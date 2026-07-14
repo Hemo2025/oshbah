@@ -11,33 +11,43 @@ function NewProducts() {
   }
 
   return (
-    <section className="bg-green-50 py-20">
-      <div className="mx-auto max-w-7xl px-6">
-        <h2 className="mb-12 text-center text-4xl font-bold text-gray-800">
+    <section className="bg-green-50 py-12 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <h2 className="mb-8 text-center text-2xl font-bold text-gray-800 md:mb-12 md:text-4xl">
           ✨ أحدث المنتجات
         </h2>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-8">
           {latestProducts.map((product) => (
             <Link
               key={product.id}
               to={`/product/${product.slug}`}
-              className="overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
+              className="group overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
             >
-              <img
-                src={product.images?.[0] || "https://via.placeholder.com/500"}
-                alt={product.name}
-                className="h-64 w-full object-cover"
-              />
+              {/* صورة المنتج */}
+              <div className="aspect-square overflow-hidden bg-gray-100">
+                <img
+                  src={
+                    product.images?.[0] ||
+                    "https://via.placeholder.com/500"
+                  }
+                  alt={product.name}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
 
-              <div className="p-5">
-                <p className="text-sm text-gray-500">{product.category}</p>
+              {/* معلومات المنتج */}
+              <div className="p-3 md:p-5">
+                <p className="mb-1 text-xs text-gray-500 md:text-sm">
+                  {product.category}
+                </p>
 
-                <h3 className="mt-2 text-lg font-bold text-gray-800">
+                <h3 className="line-clamp-2 min-h-[40px] text-sm font-bold text-gray-800 md:text-lg">
                   {product.name}
                 </h3>
 
-                <p className="mt-4 text-2xl font-bold text-green-600">
+                <p className="mt-3 text-base font-bold text-green-600 md:mt-4 md:text-2xl">
                   {product.price} ر.س
                 </p>
               </div>
