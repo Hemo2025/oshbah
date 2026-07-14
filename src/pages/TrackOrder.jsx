@@ -34,9 +34,15 @@ function OrderCard({ order }) {
           >
             {ORDER_STATUSES[order.status]}
           </span>
-          <span className="font-bold text-gray-800">
-            {order.total.toFixed(2)} ر.س
-          </span>
+          <div className="text-left">
+            <p className="font-bold text-gray-800">
+              {order.total.toFixed(2)} ر.س
+            </p>
+
+            {(order.shipping ?? 0) > 0 && (
+              <p className="text-xs text-gray-500">شامل الشحن</p>
+            )}
+          </div>
           <FaChevronDown
             className={`text-gray-400 transition ${expanded ? "rotate-180" : ""}`}
           />
@@ -67,9 +73,43 @@ function OrderCard({ order }) {
           </div>
 
           <div className="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-600">
-            <p>
-              التوصيل إلى: {order.customer.city} — {order.customer.address}
-            </p>
+            <div className="space-y-2">
+              <p>
+                التوصيل إلى: {order.customer.city}
+                {" — "}
+                {order.customer.address}
+              </p>
+
+              <div className="border-t pt-3">
+                <div className="flex justify-between">
+                  <span>إجمالي المنتجات</span>
+
+                  <span>{(order.subtotal ?? order.total).toFixed(2)} ر.س</span>
+                </div>
+
+                <div className="mt-2 flex justify-between">
+                  <span>الشحن</span>
+
+                  <span
+                    className={
+                      (order.shipping ?? 0) === 0
+                        ? "font-semibold text-green-600"
+                        : "font-semibold"
+                    }
+                  >
+                    {(order.shipping ?? 0) > 0
+                      ? `${order.shipping.toFixed(2)} ر.س`
+                      : "مجاني 🎉"}
+                  </span>
+                </div>
+
+                <div className="mt-2 flex justify-between border-t pt-3 font-bold text-gray-800">
+                  <span>الإجمالي</span>
+
+                  <span>{order.total.toFixed(2)} ر.س</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

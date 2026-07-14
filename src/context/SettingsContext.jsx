@@ -6,7 +6,27 @@ import { getSettings, saveSettings } from "../services/settingsService";
 
 export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+
   const [loading, setLoading] = useState(true);
+
+  // دمج الكائنات المتداخلة
+  const deepMerge = (target, source) => {
+    const output = { ...target };
+
+    Object.keys(source).forEach((key) => {
+      if (
+        typeof source[key] === "object" &&
+        source[key] !== null &&
+        !Array.isArray(source[key])
+      ) {
+        output[key] = deepMerge(target[key] || {}, source[key]);
+      } else {
+        output[key] = source[key];
+      }
+    });
+
+    return output;
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -16,10 +36,7 @@ export function SettingsProvider({ children }) {
         const data = await getSettings();
 
         if (mounted && data) {
-          setSettings({
-            ...DEFAULT_SETTINGS,
-            ...data,
-          });
+          setSettings(deepMerge(DEFAULT_SETTINGS, data));
         }
       } catch (error) {
         console.error("Error loading settings:", error);
@@ -35,14 +52,11 @@ export function SettingsProvider({ children }) {
     return () => {
       mounted = false;
     };
-  }, []);
+  });
 
   const updateSettings = async (updates) => {
     try {
-      const newSettings = {
-        ...settings,
-        ...updates,
-      };
+      const newSettings = deepMerge(settings, updates);
 
       setSettings(newSettings);
 
@@ -70,6 +84,9 @@ export function SettingsProvider({ children }) {
 
   if (loading) {
     return null;
+
+    // أو:
+    // return <div>Loading...</div>;
   }
 
   return (

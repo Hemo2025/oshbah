@@ -10,38 +10,49 @@ export default function WhatsAppButton({ order }) {
     const message = `
 السلام عليكم ${order.customer.name}
 
-شكراً لطلبك من عُشبة ستور
+ شكراً لطلبك من متجر عُشبة
 
 تم استلام طلبك بنجاح.
 
-رقم الطلب:
+ رقم الطلب:
 ${order.orderNumber}
 
+ تفاصيل الطلب:
 
-(تفاصيل الطلب):
 ${order.items
   ?.map(
     (item) =>
-      `- ${item.name} × ${item.quantity} (${item.price * item.quantity} ريال)`,
+      `• ${item.name}
+الكمية: ${item.quantity}
+الإجمالي: ${(item.price * item.quantity).toFixed(2)} ريال`,
   )
-  .join("\n")}
+  .join("\n\n")}
 
-إجمالي الطلب:
-${order.total} ريال
+────────────────
 
-طريقة الدفع:
+ إجمالي المنتجات:
+${(order.subtotal ?? order.total).toFixed(2)} ريال
+
+
+الشحن:
+${order.shipping > 0 ? `${order.shipping} ريال` : "مجاني"}
+
+ الإجمالي النهائي:
+${order.total.toFixed(2)} ريال
+
+ طريقة الدفع:
 الدفع عند الاستلام
 
-عنوان التوصيل:
+ عنوان التوصيل:
 ${order.customer.city}
 ${order.customer.address}
 
-حالة الطلب:
+ حالة الطلب:
 جاري المراجعة والتجهيز.
 
 سيتم التواصل معك عند تجهيز الطلب وخروجه للتوصيل.
 
-شكراً لاختيارك متجر عُشبة
+شكراً لاختيارك متجر عُشبة 
 `;
 
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;

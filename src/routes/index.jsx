@@ -12,6 +12,7 @@ import Wishlist from "../pages/Wishlist";
 import OrderConfirmation from "../pages/OrderConfirmation";
 import TrackOrder from "../pages/TrackOrder";
 import NotFound from "../pages/NotFound";
+import CategoriesPage from "../pages/CategoriesPage";
 
 // Admin Pages
 import Login from "../admin/Login";
@@ -62,8 +63,12 @@ const router = createBrowserRouter([
         element: <TrackOrder />,
       },
       {
-        path: "/about",
+        path: "about",
         element: <About />,
+      },
+      {
+        path: "categories",
+        element: <CategoriesPage />,
       },
     ],
   },

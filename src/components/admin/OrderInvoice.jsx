@@ -6,7 +6,14 @@ export default function OrderInvoice({ order }) {
 رقم الطلب: ${order.orderNumber}
 العميل: ${order.customer?.name}
 الجوال: ${order.customer?.phone}
-الإجمالي: ${order.total} ريال
+إجمالي المنتجات:
+${(order.subtotal ?? order.total).toFixed(2)} ريال
+
+الشحن:
+${(order.shipping ?? 0) > 0 ? `${order.shipping.toFixed(2)} ريال` : "مجاني"}
+
+الإجمالي:
+${order.total.toFixed(2)} ريال
 `;
 
     const qrImage = await QRCode.toDataURL(qrText);
@@ -265,14 +272,64 @@ p {
 
 
 
-    <div class="total">
+   <div class="card">
 
-    الإجمالي:
-    ${order.total}
-    ريال
+<h3>
+ملخص المبلغ
+</h3>
 
-    </div>
+<p style="
+display:flex;
+justify-content:space-between;
+">
 
+<span>
+إجمالي المنتجات
+</span>
+
+<span>
+${(order.subtotal ?? order.total).toFixed(2)}
+ريال
+</span>
+
+</p>
+
+
+<p style="
+display:flex;
+justify-content:space-between;
+">
+
+<span>
+الشحن
+</span>
+
+<span>
+${(order.shipping ?? 0) > 0 ? `${order.shipping.toFixed(2)} ريال` : "مجاني 🎉"}
+</span>
+
+</p>
+
+
+<hr style="
+border:none;
+border-top:1px dashed #ccc;
+margin:10px 0;
+">
+
+
+<div class="total">
+
+الإجمالي النهائي
+
+<br><br>
+
+${order.total.toFixed(2)}
+ريال
+
+</div>
+
+</div>
 <div style="text-align:center;margin-top:15px">
 
 <img 

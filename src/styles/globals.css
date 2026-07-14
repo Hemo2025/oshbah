@@ -189,3 +189,17 @@ body,
         transform: translateY(-45px) scale(1.4);
     }
 }
+
+/* الشحن المجاني */
+.total {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #15803d;
+    margin-top: 10px;
+}
+
+.card p {
+    display: flex;
+    justify-content: space-between;
+}

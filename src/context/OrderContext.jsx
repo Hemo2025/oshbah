@@ -161,28 +161,43 @@ export function OrderProvider({ children }) {
   // إنشاء طلب: يولّد رقم الطلب بأمان عبر عدّاد Firestore، ويحفظ
   // المستند برقم الطلب نفسه كمعرّف (بدل معرّف عشوائي)، حتى يقدر
   // الزبون لاحقاً يجيبه مباشرة بدون الحاجة لقراءة كل الطلبات.
-  const createOrder = async ({ customer, items, total }) => {
+  const createOrder = async ({
+    customer,
+    items,
+    subtotal,
+    shipping,
+    total,
+  }) => {
     const orderNumber = await getNextOrderNumber();
 
     const newOrder = {
       orderNumber,
       date: new Date().toISOString(),
       status: "pending",
+
       history: [
         {
           status: "pending",
           date: new Date().toISOString(),
         },
       ],
+
       customer,
       items,
+
+      subtotal,
+      shipping,
       total,
+
       createdAt: serverTimestamp(),
     };
 
     await setDoc(doc(db, "orders", orderNumber), newOrder);
 
-    const savedOrder = { id: orderNumber, ...newOrder };
+    const savedOrder = {
+      id: orderNumber,
+      ...newOrder,
+    };
 
     setMyOrderNumbers((prev) => [orderNumber, ...prev]);
 

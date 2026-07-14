@@ -9,7 +9,7 @@ export default function OrderConfirmation() {
   const myOrders = JSON.parse(localStorage.getItem("myOrders") || "[]");
 
   const hasAccess = location.state?.order || myOrders.includes(orderNumber);
-  
+
   const { fetchOrderByNumber } = useOrders();
 
   // أسرع مسار: الطلب يوصلنا مباشرة من صفحة الدفع نفسها بدون أي
@@ -184,8 +184,30 @@ export default function OrderConfirmation() {
                 ))}
               </div>
 
-              <div className="mt-6 border-t pt-5">
-                <div className="flex justify-between text-lg font-bold text-gray-800">
+              <div className="mt-6 border-t pt-5 space-y-3">
+                <div className="flex justify-between text-gray-500">
+                  <span>إجمالي المنتجات</span>
+
+                  <span>{(order.subtotal ?? order.total).toFixed(2)} ر.س</span>
+                </div>
+
+                <div className="flex justify-between text-gray-500">
+                  <span>الشحن</span>
+
+                  <span
+                    className={
+                      (order.shipping ?? 0) === 0
+                        ? "font-semibold text-green-600"
+                        : "font-semibold"
+                    }
+                  >
+                    {(order.shipping ?? 0) > 0
+                      ? `${order.shipping.toFixed(2)} ر.س`
+                      : "مجاني 🎉"}
+                  </span>
+                </div>
+
+                <div className="flex justify-between border-t pt-4 text-lg font-bold text-gray-800">
                   <span>الإجمالي</span>
 
                   <span className="text-green-700">

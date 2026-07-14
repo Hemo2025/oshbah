@@ -151,7 +151,7 @@ export default function OrderDetails() {
 
           {/* Stats */}
 
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="mt-8 grid gap-4 md:grid-cols-5">
             <div className="rounded-2xl bg-blue-50 p-5">
               <p className="text-gray-500">عدد المنتجات</p>
 
@@ -166,8 +166,26 @@ export default function OrderDetails() {
               </h3>
             </div>
 
+            <div className="rounded-2xl bg-blue-50 p-5">
+              <p className="text-gray-500">إجمالي المنتجات</p>
+
+              <h3 className="mt-2 text-3xl font-bold">
+                {Number(order.subtotal ?? order.total).toFixed(2)} ر.س
+              </h3>
+            </div>
+
+            <div className="rounded-2xl bg-amber-50 p-5">
+              <p className="text-gray-500">الشحن</p>
+
+              <h3 className="mt-2 text-3xl font-bold">
+                {(order.shipping ?? 0) > 0
+                  ? `${Number(order.shipping).toFixed(2)} ر.س`
+                  : "مجاني 🎉"}
+              </h3>
+            </div>
+
             <div className="rounded-2xl bg-green-50 p-5">
-              <p className="text-gray-500">قيمة الطلب</p>
+              <p className="text-gray-500">الإجمالي النهائي</p>
 
               <h3 className="mt-2 text-3xl font-bold">
                 {Number(order.total || 0).toFixed(2)} ر.س
@@ -298,8 +316,53 @@ export default function OrderDetails() {
               الإجمالي
             </div>
 
-            <div className="text-3xl font-bold text-green-700">
-              {Number(order.total || 0).toFixed(2)} ر.س
+            <div
+              className="
+    mt-8 rounded-3xl
+    bg-gradient-to-r
+    from-green-50
+    to-emerald-50
+    p-6
+  "
+            >
+              <div className="mb-5 flex items-center gap-3 text-xl font-bold">
+                <FaMoneyBillWave className="text-green-600" />
+                ملخص المبلغ
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">إجمالي المنتجات</span>
+
+                  <span className="font-bold">
+                    {Number(order.subtotal ?? order.total).toFixed(2)} ر.س
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-500">الشحن</span>
+
+                  <span
+                    className={
+                      (order.shipping ?? 0) === 0
+                        ? "font-bold text-green-600"
+                        : "font-bold"
+                    }
+                  >
+                    {(order.shipping ?? 0) > 0
+                      ? `${Number(order.shipping).toFixed(2)} ر.س`
+                      : "مجاني 🎉"}
+                  </span>
+                </div>
+
+                <div className="border-t pt-4 flex justify-between text-2xl font-bold">
+                  <span>الإجمالي النهائي</span>
+
+                  <span className="text-green-700">
+                    {Number(order.total || 0).toFixed(2)} ر.س
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 

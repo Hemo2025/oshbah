@@ -119,10 +119,10 @@ function Header() {
             </Link>
 
             <Link to="/products" className="transition hover:text-green-600">
-              المتجر
+              كل المنتجات
             </Link>
 
-            <Link to="/products" className="transition hover:text-green-600">
+            <Link to="/categories" className="transition hover:text-green-600">
               التصنيفات
             </Link>
 

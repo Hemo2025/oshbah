@@ -1,9 +1,28 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FaTrash, FaMinus, FaPlus, FaShoppingBag } from "react-icons/fa";
 import { useCart } from "../hooks/useCart";
-
+import { useSettings } from "../hooks/useSettings";
 export default function Cart() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
+
+  const { settings } = useSettings();
+
+  const shippingFee = settings?.shipping?.shippingFee || 0;
+
+  const freeShippingThreshold = settings?.shipping?.freeShippingThreshold || 0;
+
+  const shippingCost =
+    freeShippingThreshold > 0 && cartTotal >= freeShippingThreshold
+      ? 0
+      : shippingFee;
+
+  const finalTotal = cartTotal + shippingCost;
+
+  const shippingProgress =
+    freeShippingThreshold > 0
+      ? Math.min(100, (cartTotal / freeShippingThreshold) * 100)
+      : 100;
+
   const navigate = useNavigate();
 
   if (cartItems.length === 0) {
@@ -60,9 +79,7 @@ export default function Cart() {
 
                   <div className="flex items-center overflow-hidden rounded-xl border">
                     <button
-                      onClick={() =>
-                        updateQuantity(item.id, item.quantity - 1)
-                      }
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       className="px-3 py-2 text-gray-600 hover:bg-gray-100"
                     >
                       <FaMinus />
@@ -73,9 +90,7 @@ export default function Cart() {
                     </span>
 
                     <button
-                      onClick={() =>
-                        updateQuantity(item.id, item.quantity + 1)
-                      }
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       className="px-3 py-2 text-gray-600 hover:bg-gray-100"
                     >
                       <FaPlus />
@@ -99,9 +114,7 @@ export default function Cart() {
 
           {/* Order summary */}
           <div className="h-fit rounded-2xl bg-white p-6 shadow">
-            <h2 className="mb-6 text-xl font-bold text-gray-800">
-              ملخص الطلب
-            </h2>
+            <h2 className="mb-6 text-xl font-bold text-gray-800">ملخص الطلب</h2>
 
             <div className="flex justify-between text-gray-600">
               <span>الإجمالي الفرعي</span>
@@ -110,12 +123,55 @@ export default function Cart() {
 
             <div className="mt-2 flex justify-between text-gray-600">
               <span>الشحن</span>
-              <span>مجاني</span>
+
+              <span
+                className={
+                  shippingCost === 0
+                    ? "font-semibold text-green-600"
+                    : "font-semibold"
+                }
+              >
+                {shippingCost === 0
+                  ? "مجاني"
+                  : `${shippingCost.toFixed(2)} ر.س`}
+              </span>
             </div>
+
+            {/* شريط التقدم */}
+            {freeShippingThreshold > 0 && shippingCost > 0 && (
+              <div className="mt-5">
+                <div className="mb-2 flex justify-between text-xs text-gray-500">
+                  <span>التقدم نحو الشحن المجاني</span>
+
+                  <span>{shippingProgress.toFixed(0)}%</span>
+                </div>
+
+                <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full rounded-full bg-green-600 transition-all duration-500"
+                    style={{
+                      width: `${shippingProgress}%`,
+                    }}
+                  />
+                </div>
+
+                <div className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-700">
+                  أضف منتجات بقيمة{" "}
+                  {(freeShippingThreshold - cartTotal).toFixed(2)} ر.س للحصول
+                  على شحن مجاني 🎁
+                </div>
+              </div>
+            )}
+
+            {shippingCost === 0 && freeShippingThreshold > 0 && (
+              <div className="mt-4 rounded-xl bg-green-50 p-3 text-sm text-green-700">
+                🎉 مبروك! لقد حصلت على شحن مجاني.
+              </div>
+            )}
 
             <div className="mt-4 flex justify-between border-t pt-4 text-lg font-bold text-gray-800">
               <span>الإجمالي</span>
-              <span>{cartTotal.toFixed(2)} ر.س</span>
+              <span>{finalTotal.toFixed(2)} ر.س</span>
             </div>
 
             <button

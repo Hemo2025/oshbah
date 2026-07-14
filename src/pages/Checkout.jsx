@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useSettings } from "../hooks/useSettings";
 import {
   FaMapMarkerAlt,
   FaUser,
@@ -25,11 +26,21 @@ export default function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart();
   const { createOrder } = useOrders();
   const navigate = useNavigate();
-
+  const { settings } = useSettings();
   const [customer, setCustomer] = useState(emptyCustomer);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const shippingFee = settings?.shipping?.shippingFee || 0;
+
+  const freeShippingThreshold = settings?.shipping?.freeShippingThreshold || 0;
+
+  const shippingCost =
+    freeShippingThreshold > 0 && cartTotal >= freeShippingThreshold
+      ? 0
+      : shippingFee;
+
+  const finalTotal = cartTotal + shippingCost;
 
   if (cartItems.length === 0 && !orderPlaced) {
     return <Navigate to="/cart" replace />;
@@ -80,7 +91,9 @@ export default function Checkout() {
           image: item.images?.[0] || "",
         })),
 
-        total: cartTotal,
+        subtotal: cartTotal,
+        shipping: shippingCost,
+        total: finalTotal,
       });
 
       setOrderPlaced(true);
@@ -306,21 +319,38 @@ export default function Checkout() {
               ))}
             </div>
 
-            <div className="mt-6 space-y-3 border-t pt-5">
-              <div className="flex justify-between text-gray-500">
-                <span>عدد المنتجات</span>
-                <span>{cartItems.length}</span>
-              </div>
+            <div className="flex justify-between text-gray-500">
+              <span>الشحن</span>
 
-              <div className="flex justify-between text-gray-500">
-                <span>الشحن</span>
-                <span className="font-semibold text-green-600">مجاني</span>
-              </div>
+              <span
+                className={`font-semibold ${
+                  shippingCost === 0 ? "text-green-600" : "text-gray-800"
+                }`}
+              >
+                {shippingCost === 0
+                  ? "مجاني"
+                  : `${shippingCost.toFixed(2)} ر.س`}
+              </span>
+            </div>
 
-              <div className="flex justify-between border-t pt-4 text-xl font-bold text-gray-800">
-                <span>الإجمالي</span>
-                <span>{cartTotal.toFixed(2)} ر.س</span>
+            {/* تنبيه الشحن */}
+            {shippingCost === 0 && freeShippingThreshold > 0 && (
+              <div className="rounded-xl bg-green-50 p-3 text-sm text-green-700">
+                🎉 حصلت على شحن مجاني
               </div>
+            )}
+
+            {shippingCost > 0 && freeShippingThreshold > 0 && (
+              <div className="rounded-xl bg-amber-50 p-3 text-sm text-amber-700">
+                أضف منتجات بقيمة{" "}
+                {(freeShippingThreshold - cartTotal).toFixed(2)} ر.س للحصول على
+                شحن مجاني
+              </div>
+            )}
+
+            <div className="flex justify-between border-t pt-4 text-xl font-bold text-gray-800">
+              <span>الإجمالي</span>
+              <span>{finalTotal.toFixed(2)} ر.س</span>
             </div>
 
             <Link

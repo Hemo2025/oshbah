@@ -1,30 +1,29 @@
 import { useState } from "react";
-import { FaSave, FaUndo, FaCheck } from "react-icons/fa";
+import {
+  FaStore,
+  FaPalette,
+  FaBox,
+  FaTruck,
+  FaBell,
+  FaSave,
+  FaUndo,
+  FaCog,
+} from "react-icons/fa";
 
 import Sidebar from "../components/admin/Sidebar";
 import Header from "../components/admin/Header";
+
 import { useSettings } from "../hooks/useSettings";
 import { DEFAULT_SETTINGS } from "../context/default-settings";
 
 function Settings() {
   const { settings, updateSettings, resetSettings } = useSettings();
+
   const [form, setForm] = useState(settings);
   const [saved, setSaved] = useState(false);
+  const [tab, setTab] = useState("general");
 
-  const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSocialChange = (platform, value) => {
-    setForm((prev) => ({
-      ...prev,
-      socialLinks: { ...prev.socialLinks, [platform]: value },
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const save = async () => {
     await updateSettings(form);
 
     setSaved(true);
@@ -34,14 +33,55 @@ function Settings() {
     }, 2000);
   };
 
-  const handleReset = () => {
-    const confirmReset = window.confirm(
-      "هل أنت متأكد من إرجاع كل الإعدادات للوضع الافتراضي؟",
-    );
-    if (!confirmReset) return;
-    resetSettings();
+  const restore = async () => {
+    if (!window.confirm("استعادة جميع الإعدادات ؟")) return;
+
+    await resetSettings();
     setForm(DEFAULT_SETTINGS);
   };
+
+  const updateNested = (section, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [field]: value,
+      },
+    }));
+  };
+
+  const tabs = [
+    {
+      id: "general",
+      label: "عام",
+      icon: <FaStore />,
+    },
+    {
+      id: "theme",
+      label: "التصميم",
+      icon: <FaPalette />,
+    },
+    {
+      id: "products",
+      label: "المنتجات",
+      icon: <FaBox />,
+    },
+    {
+      id: "shipping",
+      label: "الشحن",
+      icon: <FaTruck />,
+    },
+    {
+      id: "notifications",
+      label: "الإشعارات",
+      icon: <FaBell />,
+    },
+    {
+      id: "advanced",
+      label: "متقدمة",
+      icon: <FaCog />,
+    },
+  ];
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -50,246 +90,268 @@ function Settings() {
       <main className="flex-1 p-8">
         <Header />
 
-        <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-6">
-          {/* بيانات المتجر */}
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <h2 className="mb-6 text-xl font-bold text-gray-800">
-              بيانات المتجر
-            </h2>
+        <div className="mt-8 grid gap-6 lg:grid-cols-[280px_1fr]">
+          {/* القائمة */}
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div>
-                <label className="mb-2 block font-semibold text-gray-700">
-                  اسم المتجر
-                </label>
-                <input
-                  type="text"
-                  value={form.storeName}
-                  onChange={(e) => handleChange("storeName", e.target.value)}
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                />
-              </div>
+          <div className="rounded-3xl bg-white p-4 shadow">
+            <h2 className="mb-6 text-xl font-bold">إعدادات المتجر</h2>
 
-              <div>
-                <label className="mb-2 block font-semibold text-gray-700">
-                  البريد الإلكتروني
-                </label>
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                  placeholder="info@oshbah.com"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block font-semibold text-gray-700">
-                  رقم الجوال
-                </label>
-                <input
-                  type="tel"
-                  value={form.phone}
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                  placeholder="05xxxxxxxx"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block font-semibold text-gray-700">
-                  رقم الواتساب
-                </label>
-                <input
-                  type="tel"
-                  value={form.whatsapp}
-                  onChange={(e) => handleChange("whatsapp", e.target.value)}
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                  placeholder="05xxxxxxxx"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="mb-2 block font-semibold text-gray-700">
-                  العنوان
-                </label>
-                <input
-                  type="text"
-                  value={form.address}
-                  onChange={(e) => handleChange("address", e.target.value)}
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="mb-2 block font-semibold text-gray-700">
-                  وصف المتجر
-                </label>
-                <textarea
-                  value={form.storeDescription}
-                  onChange={(e) =>
-                    handleChange("storeDescription", e.target.value)
-                  }
-                  rows={3}
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                />
-              </div>
+            <div className="flex flex-col gap-2">
+              {tabs.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setTab(item.id)}
+                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition ${
+                    tab === item.id
+                      ? "bg-green-600 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  {item.icon}
+                  {item.label}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* الشحن */}
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <h2 className="mb-6 text-xl font-bold text-gray-800">الشحن</h2>
+          {/* المحتوى */}
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div>
-                <label className="mb-2 block font-semibold text-gray-700">
-                  رسوم الشحن (ر.س)
-                </label>
+          <div className="rounded-3xl bg-white p-6 shadow">
+            {/* عام */}
+
+            {tab === "general" && (
+              <div className="space-y-5">
+                <h2 className="text-2xl font-bold">البيانات العامة</h2>
+
                 <input
-                  type="number"
-                  min="0"
-                  value={form.shippingFee}
+                  className="w-full rounded-xl border p-3"
+                  placeholder="اسم المتجر"
+                  value={form.storeName}
                   onChange={(e) =>
-                    handleChange("shippingFee", Number(e.target.value))
+                    setForm({
+                      ...form,
+                      storeName: e.target.value,
+                    })
                   }
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
                 />
-              </div>
 
-              <div>
-                <label className="mb-2 block font-semibold text-gray-700">
-                  حد الشحن المجاني (ر.س)
+                <textarea
+                  rows={4}
+                  className="w-full rounded-xl border p-3"
+                  placeholder="وصف المتجر"
+                  value={form.storeDescription}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      storeDescription: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  className="w-full rounded-xl border p-3"
+                  placeholder="رقم الواتساب"
+                  value={form.whatsapp}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      whatsapp: e.target.value,
+                    })
+                  }
+                />
+
+                <label className="flex items-center justify-between rounded-xl border p-4">
+                  <span>وضع الصيانة</span>
+
+                  <input
+                    type="checkbox"
+                    checked={form.maintenanceMode}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        maintenanceMode: e.target.checked,
+                      })
+                    }
+                  />
                 </label>
+              </div>
+            )}
+
+            {/* التصميم */}
+
+            {tab === "theme" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold">التصميم</h2>
+
+                <div>
+                  <label>اللون الرئيسي</label>
+
+                  <input
+                    type="color"
+                    value={form.theme?.primaryColor}
+                    onChange={(e) =>
+                      updateNested("theme", "primaryColor", e.target.value)
+                    }
+                  />
+                </div>
+
+                <label className="flex justify-between rounded-xl border p-4">
+                  الوضع الداكن
+                  <input
+                    type="checkbox"
+                    checked={form.theme?.darkMode}
+                    onChange={(e) =>
+                      updateNested("theme", "darkMode", e.target.checked)
+                    }
+                  />
+                </label>
+              </div>
+            )}
+
+            {/* المنتجات */}
+
+            {tab === "products" && (
+              <div className="space-y-5">
+                <h2 className="text-2xl font-bold">المنتجات</h2>
+
+                <label className="flex justify-between rounded-xl border p-4">
+                  إخفاء المنتجات المنتهية
+                  <input
+                    type="checkbox"
+                    checked={form.products?.hideOutOfStock}
+                    onChange={(e) =>
+                      updateNested(
+                        "products",
+                        "hideOutOfStock",
+                        e.target.checked,
+                      )
+                    }
+                  />
+                </label>
+
+                <label className="flex justify-between rounded-xl border p-4">
+                  عرض المفضلة
+                  <input
+                    type="checkbox"
+                    checked={form.products?.showFavorites}
+                    onChange={(e) =>
+                      updateNested(
+                        "products",
+                        "showFavorites",
+                        e.target.checked,
+                      )
+                    }
+                  />
+                </label>
+              </div>
+            )}
+
+            {/* الشحن */}
+
+            {tab === "shipping" && (
+              <div className="space-y-5">
+                <h2 className="text-2xl font-bold">الشحن</h2>
+
                 <input
                   type="number"
-                  min="0"
-                  value={form.freeShippingThreshold}
+                  className="w-full rounded-xl border p-3"
+                  placeholder="رسوم الشحن"
+                  value={form.shipping?.shippingFee}
                   onChange={(e) =>
-                    handleChange(
+                    updateNested(
+                      "shipping",
+                      "shippingFee",
+                      Number(e.target.value),
+                    )
+                  }
+                />
+
+                <input
+                  type="number"
+                  className="w-full rounded-xl border p-3"
+                  placeholder="الشحن المجاني بعد"
+                  value={form.shipping?.freeShippingThreshold}
+                  onChange={(e) =>
+                    updateNested(
+                      "shipping",
                       "freeShippingThreshold",
                       Number(e.target.value),
                     )
                   }
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
                 />
-                <p className="mt-1 text-xs text-gray-400">
-                  الطلبات فوق هذا المبلغ توصيلها مجاني
-                </p>
               </div>
-            </div>
-          </div>
+            )}
 
-          {/* التواصل الاجتماعي */}
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <h2 className="mb-6 text-xl font-bold text-gray-800">
-              التواصل الاجتماعي
-            </h2>
+            {/* الإشعارات */}
 
-            <div className="grid gap-5 sm:grid-cols-3">
-              <div>
-                <label className="mb-2 block font-semibold text-gray-700">
-                  انستقرام
+            {tab === "notifications" && (
+              <div className="space-y-5">
+                <h2 className="text-2xl font-bold">الإشعارات</h2>
+
+                <label className="flex justify-between rounded-xl border p-4">
+                  صوت الطلبات
+                  <input
+                    type="checkbox"
+                    checked={form.notifications?.orderSound}
+                    onChange={(e) =>
+                      updateNested(
+                        "notifications",
+                        "orderSound",
+                        e.target.checked,
+                      )
+                    }
+                  />
                 </label>
-                <input
-                  type="text"
-                  value={form.socialLinks.instagram}
-                  onChange={(e) =>
-                    handleSocialChange("instagram", e.target.value)
-                  }
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                  placeholder="https://instagram.com/..."
-                />
-              </div>
 
-              <div>
-                <label className="mb-2 block font-semibold text-gray-700">
-                  تويتر / X
+                <label className="flex justify-between rounded-xl border p-4">
+                  إشعارات المخزون
+                  <input
+                    type="checkbox"
+                    checked={form.notifications?.lowStockNotification}
+                    onChange={(e) =>
+                      updateNested(
+                        "notifications",
+                        "lowStockNotification",
+                        e.target.checked,
+                      )
+                    }
+                  />
                 </label>
-                <input
-                  type="text"
-                  value={form.socialLinks.twitter}
-                  onChange={(e) =>
-                    handleSocialChange("twitter", e.target.value)
-                  }
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                  placeholder="https://x.com/..."
-                />
               </div>
+            )}
 
-              <div>
-                <label className="mb-2 block font-semibold text-gray-700">
-                  سناب شات
-                </label>
-                <input
-                  type="text"
-                  value={form.socialLinks.snapchat}
-                  onChange={(e) =>
-                    handleSocialChange("snapchat", e.target.value)
-                  }
-                  className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
-                  placeholder="https://snapchat.com/add/..."
-                />
+            {/* متقدمة */}
+
+            {tab === "advanced" && (
+              <div className="space-y-5">
+                <h2 className="text-2xl font-bold">خيارات متقدمة</h2>
+
+                <button
+                  className="rounded-xl bg-red-100 px-5 py-3 text-red-600"
+                  onClick={restore}
+                >
+                  <FaUndo className="inline ml-2" />
+                  استعادة الإعدادات
+                </button>
               </div>
-            </div>
-          </div>
+            )}
 
-          {/* وضع الصيانة */}
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-gray-800">وضع الصيانة</h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  عند التفعيل، يظهر إشعار صيانة للزوار بدل المتجر
-                </p>
-              </div>
+            {/* أزرار */}
 
+            <div className="mt-10 border-t pt-6">
               <button
-                type="button"
-                onClick={() =>
-                  handleChange("maintenanceMode", !form.maintenanceMode)
-                }
-                className={`relative h-8 w-14 rounded-full transition ${
-                  form.maintenanceMode ? "bg-red-500" : "bg-gray-300"
+                onClick={save}
+                className={`flex items-center gap-2 rounded-xl px-6 py-3 text-white ${
+                  saved ? "bg-green-800" : "bg-green-600 hover:bg-green-700"
                 }`}
               >
-                <span
-                  className={`absolute top-1 h-6 w-6 rounded-full bg-white transition ${
-                    form.maintenanceMode ? "right-1" : "right-7"
-                  }`}
-                />
+                <FaSave />
+
+                {saved ? "تم الحفظ" : "حفظ الإعدادات"}
               </button>
             </div>
           </div>
-
-          {/* الأزرار */}
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              className={`flex items-center gap-2 rounded-xl px-6 py-3 text-white transition ${
-                saved ? "bg-green-800" : "bg-green-600 hover:bg-green-700"
-              }`}
-            >
-              {saved ? (
-                <>
-                  <FaCheck /> تم الحفظ
-                </>
-              ) : (
-                <>
-                  <FaSave /> حفظ الإعدادات
-                </>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleReset}
-              className="flex items-center gap-2 rounded-xl bg-gray-200 px-6 py-3 text-gray-700 hover:bg-gray-300"
-            >
-              <FaUndo /> استعادة الافتراضي
-            </button>
-          </div>
-        </form>
+        </div>
       </main>
     </div>
   );
