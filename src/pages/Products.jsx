@@ -215,10 +215,31 @@ export default function Products() {
                   <h3 className="line-clamp-2 min-h-[40px] text-sm font-bold text-gray-800 md:text-lg">
                     {product.name}
                   </h3>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 md:mt-3">
+                    <p className="text-base font-bold text-green-600 md:text-2xl">
+                      {product.price} ر.س
+                    </p>
 
-                  <p className="mt-2 text-base font-bold text-green-600 md:mt-3 md:text-2xl">
-                    {product.price} ر.س
-                  </p>
+                    {product.oldPrice &&
+                      Number(product.oldPrice) > Number(product.price) && (
+                        <>
+                          <span className="text-xs text-gray-400 line-through md:text-base">
+                            {product.oldPrice} ر.س
+                          </span>
+
+                          <span className="rounded-full bg-red-100 px-2 py-1 text-[10px] font-bold text-red-600 md:text-xs">
+                            -
+                            {Math.round(
+                              ((Number(product.oldPrice) -
+                                Number(product.price)) /
+                                Number(product.oldPrice)) *
+                                100,
+                            )}
+                            %
+                          </span>
+                        </>
+                      )}
+                  </div>
 
                   <button
                     onClick={(e) => handleAddToCart(e, product)}
