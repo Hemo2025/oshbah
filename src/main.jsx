@@ -21,7 +21,7 @@ createRoot(document.getElementById("root")).render(
               <OrderProvider>
                 <App />
                 <Analytics />
-                <ToastContainer position="top-left" rtl autoClose={5000} />
+                <ToastContainer position="top-left" rtl autoClose={5000} /> 
               </OrderProvider>
             </WishlistProvider>
           </CartProvider>
