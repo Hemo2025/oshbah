@@ -10,7 +10,7 @@ import { OrderProvider } from "./context/OrderContext.jsx";
 import { SettingsProvider } from "./context/SettingsContext.jsx";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
-
+import { Analytics } from "@vercel/analytics/react";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
@@ -20,6 +20,7 @@ createRoot(document.getElementById("root")).render(
             <WishlistProvider>
               <OrderProvider>
                 <App />
+                <Analytics />
                 <ToastContainer position="top-left" rtl autoClose={5000} />
               </OrderProvider>
             </WishlistProvider>
