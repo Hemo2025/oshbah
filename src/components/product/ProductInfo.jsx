@@ -4,6 +4,9 @@ import { useReviews } from "../../hooks/useReviews";
 
 function ProductInfo({ product }) {
   const { averageRating, reviews } = useReviews(product.id);
+  console.log("Product ID:", product.id);
+  console.log("Reviews:", reviews);
+
   const discount =
     product.oldPrice && product.price
       ? Math.round(

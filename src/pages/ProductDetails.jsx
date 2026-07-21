@@ -8,6 +8,7 @@ import ProductActions from "../components/product/ProductActions";
 import { useCart } from "../hooks/useCart";
 import { Helmet } from "react-helmet-async";
 import ReviewForm from "../components/product/ReviewForm";
+import ProductReviews from "../components/product/ProductReviews";
 function ProductDetails() {
   const { slug } = useParams();
   const [showFloatingProduct, setShowFloatingProduct] = useState(false);
@@ -262,6 +263,8 @@ function ProductDetails() {
 
         {/* Description */}
 
+        <ProductReviews productId={product.id} />
+        <ReviewForm productId={product.id} />
         {/* Related */}
         {relatedProducts.length > 0 && (
           <div className="mt-20">
@@ -322,7 +325,6 @@ function ProductDetails() {
             </div>
           </div>
         )}
-        <ReviewForm productId={product.id} />
       </div>
       {showFloatingProduct && (
         <div
