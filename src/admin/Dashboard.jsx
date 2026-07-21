@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase/config";
 import {
   FaBox,
   FaShoppingCart,
@@ -6,6 +8,7 @@ import {
   FaClock,
   FaTags,
   FaExclamationTriangle,
+  FaEye,
 } from "react-icons/fa";
 
 import Sidebar from "../components/admin/Sidebar";
@@ -19,6 +22,15 @@ function Dashboard() {
   const { orders, totalRevenue } = useOrders();
 
   const [newOrdersCount, setNewOrdersCount] = useState(0);
+  const [visits, setVisits] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, "stats", "visits"), (snapshot) => {
+      setVisits(snapshot.data()?.total || 0);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const previousOrdersCount = useRef(0);
 
@@ -120,7 +132,7 @@ function Dashboard() {
     grid-cols-1
     gap-4
     sm:grid-cols-2
-    xl:grid-cols-4
+    xl:grid-cols-5
   "
         >
           <div className="rounded-3xl bg-white p-6 shadow">
@@ -136,7 +148,19 @@ function Dashboard() {
               <FaBox className="text-4xl text-green-600" />
             </div>
           </div>
+          <div className="rounded-3xl bg-white p-6 shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-gray-500">زيارات المتجر</h3>
 
+                <p className="mt-3 text-4xl font-bold text-purple-600">
+                  {visits.toLocaleString()}
+                </p>
+              </div>
+
+              <FaEye className="text-4xl text-purple-500" />
+            </div>
+          </div>
           <div className="rounded-3xl bg-white p-6 shadow">
             <div className="flex items-center justify-between">
               <div>

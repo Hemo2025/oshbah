@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { Analytics } from "@vercel/analytics/react";
 import { HelmetProvider } from "react-helmet-async";
+import VisitTracker from "./components/common/VisitTracker.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
@@ -21,6 +22,7 @@ createRoot(document.getElementById("root")).render(
             <CartProvider>
               <WishlistProvider>
                 <OrderProvider>
+                  <VisitTracker />
                   <App />
                   <Analytics />
                   <ToastContainer position="top-left" rtl autoClose={5000} />
