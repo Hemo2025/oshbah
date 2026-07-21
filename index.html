@@ -10,17 +10,21 @@
   <!-- Responsive -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Language -->
+  <meta http-equiv="content-language" content="ar-SA" />
+
   <!-- Title -->
   <title>
     عُشبة ستور | متجر المنتجات الطبيعية والأعشاب والعسل
   </title>
 
-  <!-- Description -->
+  <!-- SEO Description -->
   <meta name="description"
-    content="متجر عُشبة للمنتجات الطبيعية والأعشاب والعسل ومنتجات الصحة والجمال بأفضل الأسعار." />
+    content="متجر عُشبة للمنتجات الطبيعية والأعشاب والعسل. اكتشف أفضل المنتجات الطبيعية والصحية مع شحن سريع وأسعار مميزة." />
 
   <!-- Keywords -->
-  <meta name="keywords" content="عشبة, عُشبة ستور, أعشاب, عسل, منتجات طبيعية, متجر أعشاب, منتجات صحية, متجر إلكتروني" />
+  <meta name="keywords"
+    content="عسل طبيعي, أعشاب طبيعية, منتجات طبيعية, متجر أعشاب, منتجات صحية, عُشبة ستور, متجر إلكتروني السعودية" />
 
   <!-- Author -->
   <meta name="author" content="عُشبة ستور" />
@@ -28,21 +32,26 @@
   <!-- Robots -->
   <meta name="robots" content="index, follow" />
 
-  <!-- Theme Color -->
+  <!-- Canonical -->
+  <link rel="canonical" href="https://oshbahstore.com/" />
+
+  <!-- Theme -->
   <meta name="theme-color" content="#15803d" />
 
-  <!-- Open Graph (Facebook / WhatsApp) -->
+  <!-- Open Graph Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
 
-  <meta property="og:title" content="عُشبة ستور | متجر المنتجات الطبيعية" />
+  <meta property="og:title" content="عُشبة ستور | متجر المنتجات الطبيعية والأعشاب والعسل" />
 
   <meta property="og:description" content="اكتشف أفضل المنتجات الطبيعية والأعشاب والعسل من متجر عُشبة." />
 
   <meta property="og:image" content="https://oshbahstore.com/logo.png" />
 
-  <meta property="og:url" content="https://oshbahstore.com" />
+  <meta property="og:url" content="https://oshbahstore.com/" />
 
-  <!-- Twitter -->
+  <meta property="og:locale" content="ar_SA" />
+
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
 
   <meta name="twitter:title" content="عُشبة ستور | متجر المنتجات الطبيعية" />
@@ -50,21 +59,30 @@
   <meta name="twitter:description" content="متجر متخصص في المنتجات الطبيعية والأعشاب والعسل." />
 
   <meta name="twitter:image" content="https://oshbahstore.com/logo.png" />
+
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WPG86T0C46"></script>
 
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
 
-    gtag('config', 'G-WPG86T0C46');
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag("js", new Date());
+
+    gtag("config", "G-WPG86T0C46");
   </script>
+
 </head>
 
 <body>
+
   <div id="root"></div>
 
   <script type="module" src="/src/main.jsx"></script>
+
 </body>
 
 </html>
