@@ -133,14 +133,16 @@ function ProductDetails() {
         {/* Google Product Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
-            "@context": "https://schema.org/",
+            "@context": "https://schema.org",
             "@type": "Product",
 
             name: product.name,
 
             image: product.images?.length ? product.images : [productImage],
 
-            description: cleanDescription,
+            description:
+              product.description?.replace(/<[^>]*>/g, "") ||
+              `اشتري ${product.name} من متجر عُشبة ستور`,
 
             sku: product.id,
 
@@ -151,12 +153,9 @@ function ProductDetails() {
 
             offers: {
               "@type": "Offer",
-
               url: `https://oshbahstore.com/product/${product.slug}`,
-
               priceCurrency: "SAR",
-
-              price: Number(product.price),
+              price: String(product.price),
 
               availability:
                 Number(product.stock) > 0
@@ -168,14 +167,6 @@ function ProductDetails() {
                 name: "عُشبة ستور",
               },
             },
-
-            ...(product.reviews > 0 && {
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: Number(product.rating || 5),
-                reviewCount: Number(product.reviews),
-              },
-            }),
           })}
         </script>
       </Helmet>
