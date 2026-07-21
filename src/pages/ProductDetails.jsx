@@ -94,25 +94,99 @@ function ProductDetails() {
 
         <meta
           name="description"
-          content={product.description || product.name}
+          content={
+            product.description ||
+            `اشتري ${product.name} من متجر عُشبة. منتجات طبيعية أصلية مع شحن سريع.`
+          }
         />
 
+        <link
+          rel="canonical"
+          href={`https://oshbahstore.com/product/${product.slug}`}
+        />
+
+        {/* Open Graph */}
         <meta property="og:title" content={`${product.name} | عُشبة ستور`} />
 
         <meta
           property="og:description"
           content={
-            product.description || `اطلب ${product.name} الآن من عُشبة ستور`
+            product.description || `اطلب ${product.name} الآن من متجر عُشبة`
           }
         />
 
         <meta property="og:image" content={productImage} />
 
-        <meta property="og:url" content={window.location.href} />
+        <meta
+          property="og:url"
+          content={`https://oshbahstore.com/product/${product.slug}`}
+        />
 
         <meta property="og:type" content="product" />
 
         <meta property="og:site_name" content="عُشبة ستور" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+
+        <meta name="twitter:title" content={`${product.name} | عُشبة ستور`} />
+
+        <meta
+          name="twitter:description"
+          content={product.description || `اشتري ${product.name} من عُشبة ستور`}
+        />
+
+        <meta name="twitter:image" content={productImage} />
+
+        {/* Google Product Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "Product",
+
+            name: product.name,
+
+            image: product.images || [productImage],
+
+            description: product.description || `منتج طبيعي من متجر عُشبة`,
+
+            sku: product.id,
+
+            brand: {
+              "@type": "Brand",
+              name: "عُشبة ستور",
+            },
+
+            offers: {
+              "@type": "Offer",
+
+              url: `https://oshbahstore.com/product/${product.slug}`,
+
+              priceCurrency: "SAR",
+
+              price: product.price,
+
+              availability:
+                Number(product.stock) > 0
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock",
+
+              seller: {
+                "@type": "Organization",
+                name: "عُشبة ستور",
+              },
+            },
+
+            aggregateRating:
+              product.reviews > 0
+                ? {
+                    "@type": "AggregateRating",
+                    ratingValue: product.rating || 5,
+                    reviewCount: product.reviews,
+                  }
+                : undefined,
+          })}
+        </script>
       </Helmet>
       <div className="mx-auto max-w-7xl px-5">
         {/* Breadcrumb */}
