@@ -169,6 +169,39 @@ function ProductDetails() {
             },
           })}
         </script>
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "الرئيسية",
+                item: "https://oshbahstore.com/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "المنتجات",
+                item: "https://oshbahstore.com/products",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: product.category || "منتجات طبيعية",
+                item: `https://oshbahstore.com/products?category=${product.category}`,
+              },
+              {
+                "@type": "ListItem",
+                position: 4,
+                name: product.name,
+                item: `https://oshbahstore.com/product/${product.slug}`,
+              },
+            ],
+          })}
+        </script>
       </Helmet>
       <div className="mx-auto max-w-7xl px-5">
         {/* Breadcrumb */}
