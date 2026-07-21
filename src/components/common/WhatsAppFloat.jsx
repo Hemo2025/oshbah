@@ -8,20 +8,20 @@ export default function WhatsAppFloat() {
   const location = useLocation();
   const { products } = useStore();
 
-  const currentProduct = products.find(
-    (p) => location.pathname === `/product/${p.slug}`,
-  );
+  const slug = decodeURIComponent(location.pathname.split("/").pop());
+
+  const currentProduct = products.find((p) => p.slug === slug);
 
   let message = "السلام عليكم، أريد الاستفسار عن منتجات عُشبة ستور.";
 
-  if (currentProduct) {
-    message = `مرحباً 👋
+  if (location.pathname.startsWith("/product/") && currentProduct) {
+    message = `مرحباً 
 
 أرغب بالاستفسار عن هذا المنتج في عُشبة ستور:
 
-🛍️ المنتج: ${currentProduct.name}
+- المنتج: ${currentProduct.name}
 
-💰 السعر: ${currentProduct.price} ر.س
+- السعر: ${currentProduct.price} ر.س
 
 🔗 رابط المنتج:
 ${window.location.href}`;
@@ -32,13 +32,18 @@ ${window.location.href}`;
       href={`https://wa.me/${phone}?text=${encodeURIComponent(message)}`}
       target="_blank"
       rel="noopener noreferrer"
+      aria-label="واتساب"
       className="
         fixed bottom-5 left-5 z-[9999]
         flex items-center gap-3
-        rounded-full bg-[#25D366]
-        px-4 py-3 text-white
-        shadow-2xl transition-all duration-300
-        hover:scale-105 whatsapp-btn
+        rounded-full
+        bg-[#25D366]
+        px-4 py-3
+        text-white
+        shadow-2xl
+        transition-all duration-300
+        hover:scale-105
+        whatsapp-btn
       "
     >
       <FaWhatsapp size={30} />
