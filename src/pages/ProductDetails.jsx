@@ -25,7 +25,10 @@ function ProductDetails() {
   const { addToCart } = useCart();
   const product = getProductBySlug(slug);
   const productImage =
-    product?.images?.[0] || "https://oshbah.vercel.app/logo.png";
+    product?.images?.[0] || "https://oshbahstore.com/logo.png";
+  const cleanDescription =
+    product?.description?.replace(/<[^>]*>/g, "").slice(0, 300) ||
+    `اشتري ${product?.name} من متجر عُشبة`;
 
   // حالة التحميل: لسه المنتجات ما وصلتش من الـ store
   const isStoreLoading = isLoading ?? products.length === 0;
@@ -92,13 +95,7 @@ function ProductDetails() {
       <Helmet>
         <title>{product.name} | عُشبة ستور</title>
 
-        <meta
-          name="description"
-          content={
-            product.description ||
-            `اشتري ${product.name} من متجر عُشبة. منتجات طبيعية أصلية مع شحن سريع.`
-          }
-        />
+        <meta name="description" content={cleanDescription} />
 
         <link
           rel="canonical"
@@ -108,12 +105,7 @@ function ProductDetails() {
         {/* Open Graph */}
         <meta property="og:title" content={`${product.name} | عُشبة ستور`} />
 
-        <meta
-          property="og:description"
-          content={
-            product.description || `اطلب ${product.name} الآن من متجر عُشبة`
-          }
-        />
+        <meta property="og:description" content={cleanDescription} />
 
         <meta property="og:image" content={productImage} />
 
@@ -146,9 +138,9 @@ function ProductDetails() {
 
             name: product.name,
 
-            image: product.images || [productImage],
+            image: product.images?.length ? product.images : [productImage],
 
-            description: product.description || `منتج طبيعي من متجر عُشبة`,
+            description: cleanDescription,
 
             sku: product.id,
 
@@ -164,7 +156,7 @@ function ProductDetails() {
 
               priceCurrency: "SAR",
 
-              price: product.price,
+              price: Number(product.price),
 
               availability:
                 Number(product.stock) > 0
@@ -177,14 +169,13 @@ function ProductDetails() {
               },
             },
 
-            aggregateRating:
-              product.reviews > 0
-                ? {
-                    "@type": "AggregateRating",
-                    ratingValue: product.rating || 5,
-                    reviewCount: product.reviews,
-                  }
-                : undefined,
+            ...(product.reviews > 0 && {
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: Number(product.rating || 5),
+                reviewCount: Number(product.reviews),
+              },
+            }),
           })}
         </script>
       </Helmet>
