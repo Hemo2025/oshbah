@@ -6,6 +6,7 @@ import ProductGallery from "../components/product/ProductGallery";
 import ProductInfo from "../components/product/ProductInfo";
 import ProductActions from "../components/product/ProductActions";
 import { useCart } from "../hooks/useCart";
+import { Helmet } from "react-helmet-async";
 function ProductDetails() {
   const { slug } = useParams();
   const [showFloatingProduct, setShowFloatingProduct] = useState(false);
@@ -23,6 +24,8 @@ function ProductDetails() {
   const { products, getProductBySlug, isLoading } = useStore();
   const { addToCart } = useCart();
   const product = getProductBySlug(slug);
+  const productImage =
+    product?.images?.[0] || "https://oshbah.vercel.app/logo.png";
 
   // حالة التحميل: لسه المنتجات ما وصلتش من الـ store
   const isStoreLoading = isLoading ?? products.length === 0;
@@ -86,6 +89,31 @@ function ProductDetails() {
 
   return (
     <section className="bg-gradient-to-b from-green-50 via-white to-green-50 py-16">
+      <Helmet>
+        <title>{product.name} | عُشبة ستور</title>
+
+        <meta
+          name="description"
+          content={product.description || product.name}
+        />
+
+        <meta property="og:title" content={`${product.name} | عُشبة ستور`} />
+
+        <meta
+          property="og:description"
+          content={
+            product.description || `اطلب ${product.name} الآن من عُشبة ستور`
+          }
+        />
+
+        <meta property="og:image" content={productImage} />
+
+        <meta property="og:url" content={window.location.href} />
+
+        <meta property="og:type" content="product" />
+
+        <meta property="og:site_name" content="عُشبة ستور" />
+      </Helmet>
       <div className="mx-auto max-w-7xl px-5">
         {/* Breadcrumb */}
         <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-gray-500">
