@@ -1,6 +1,9 @@
 import { FaStar, FaCheckCircle } from "react-icons/fa";
 
+import { useReviews } from "../../hooks/useReviews";
+
 function ProductInfo({ product }) {
+  const { averageRating, reviews } = useReviews(product.id);
   const discount =
     product.oldPrice && product.price
       ? Math.round(
@@ -33,10 +36,10 @@ function ProductInfo({ product }) {
         <div className="flex items-center gap-1 rounded-xl bg-yellow-50 px-4 py-2">
           <FaStar className="text-yellow-400" />
 
-          <span className="font-bold">{product.rating || 5}</span>
+          <span className="font-bold">{averageRating || "جديد"}</span>
         </div>
 
-        <span className="text-gray-500">({product.reviews || 0} تقييم)</span>
+        <span className="text-gray-500">({reviews?.length || 0} تقييم)</span>
       </div>
 
       {/* Price */}

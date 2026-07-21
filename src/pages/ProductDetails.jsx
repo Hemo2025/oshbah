@@ -7,6 +7,7 @@ import ProductInfo from "../components/product/ProductInfo";
 import ProductActions from "../components/product/ProductActions";
 import { useCart } from "../hooks/useCart";
 import { Helmet } from "react-helmet-async";
+import ReviewForm from "../components/product/ReviewForm";
 function ProductDetails() {
   const { slug } = useParams();
   const [showFloatingProduct, setShowFloatingProduct] = useState(false);
@@ -321,6 +322,7 @@ function ProductDetails() {
             </div>
           </div>
         )}
+        <ReviewForm productId={product.id} />
       </div>
       {showFloatingProduct && (
         <div
