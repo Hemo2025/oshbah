@@ -34,7 +34,7 @@ ${window.location.href}`;
       rel="noopener noreferrer"
       aria-label="واتساب"
       className="
-        fixed bottom-5 left-5 z-[9999]
+      fixed bottom-[120px] md:bottom-5 left-5 z-[9999]
         flex items-center gap-3
         rounded-full
         bg-[#25D366]
