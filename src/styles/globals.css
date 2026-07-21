@@ -224,3 +224,12 @@ body,
 .whatsapp-btn {
     animation: whatsappPulse 2.5s infinite;
 }
+
+/* اشعار تم ارسال التقييم */
+.Toastify__toast-container {
+    z-index: 9999999 !important;
+}
+
+.Toastify__toast {
+    z-index: 9999999 !important;
+}
