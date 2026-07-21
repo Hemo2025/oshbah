@@ -3,7 +3,7 @@ import Header from "../common/Header";
 import Footer from "../common/Footer";
 import ScrollToTop from "../common/ScrollToTop";
 import ScrollToHash from "../common/ScrollToHash";
-
+import WhatsAppFloat from "../common/WhatsAppFloat";
 function Layout() {
   return (
     <>
@@ -13,6 +13,7 @@ function Layout() {
       <Header />
       <Outlet />
       <Footer />
+      <WhatsAppFloat />
     </>
   );
 }
