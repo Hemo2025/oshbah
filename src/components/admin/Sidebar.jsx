@@ -7,6 +7,7 @@ import {
   FaTags,
   FaCog,
   FaSignOutAlt,
+  FaStar,
 } from "react-icons/fa";
 
 import { useAuth } from "../../hooks/useAuth";
@@ -46,6 +47,11 @@ function Sidebar({ newOrdersCount = 0 }) {
       name: "التصنيفات",
       icon: <FaTags />,
       path: "/admin/categories",
+    },
+    {
+      name: "التقييمات",
+      icon: <FaStar />,
+      path: "/admin/reviews",
     },
     {
       name: "الإعدادات",

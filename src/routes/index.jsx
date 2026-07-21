@@ -24,6 +24,7 @@ import AdminSettings from "../admin/Settings";
 import ProductForm from "../admin/ProductForm";
 import ProtectedRoute from "./ProtectedRoute";
 import OrderDetails from "../admin/OrderDetails";
+import Reviews from "../admin/Reviews";
 import About from "../pages/About";
 const router = createBrowserRouter([
   {
@@ -114,6 +115,10 @@ const router = createBrowserRouter([
           {
             path: "orders/:id",
             element: <OrderDetails />,
+          },
+          {
+            path: "reviews",
+            element: <Reviews />,
           },
           {
             path: "settings",
