@@ -31,7 +31,7 @@ function Products() {
     }
   };
   const navigate = useNavigate();
-  const { products, deleteProduct } = useStore();
+  const { products, categories, deleteProduct } = useStore();
 
   const [search, setSearch] = useState("");
 
@@ -88,7 +88,7 @@ function Products() {
                 + إضافة منتج
               </button>
               <button
-                onClick={downloadProductTemplate}
+                onClick={() => downloadProductTemplate(categories)}
                 className="rounded-xl bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700"
               >
                 📥 تحميل قالب Excel
