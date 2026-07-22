@@ -11,15 +11,7 @@ import ReviewForm from "../components/product/ReviewForm";
 import ProductReviews from "../components/product/ProductReviews";
 function ProductDetails() {
   const { slug } = useParams();
-  console.log("URL slug:", slug);
-  console.log(
-    "Products:",
-    products?.map((p) => ({
-      name: p.name,
-      slug: p.slug,
-      seoSlug: p.seoSlug,
-    })),
-  );
+
   const navigate = useNavigate();
   const [showFloatingProduct, setShowFloatingProduct] = useState(false);
 
@@ -36,6 +28,15 @@ function ProductDetails() {
   const { products, getProductBySlug, isLoading } = useStore();
   const { addToCart } = useCart();
   const product = getProductBySlug(slug);
+  console.log("URL slug:", slug);
+  console.log(
+    "Products:",
+    products?.map((p) => ({
+      name: p.name,
+      slug: p.slug,
+      seoSlug: p.seoSlug,
+    })),
+  );
   useEffect(() => {
     if (!product) return;
 
