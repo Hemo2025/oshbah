@@ -9,6 +9,11 @@ import ProductEditor from "../components/admin/ProductEditor";
 const emptyProduct = {
   name: "",
   slug: "",
+
+  seoTitle: "",
+  seoDescription: "",
+  seoSlug: "",
+
   price: "",
   oldPrice: "",
   stock: "",
@@ -63,10 +68,15 @@ function ProductForm() {
 
   const handleChange = (field, value) => {
     if (field === "name") {
+      const slug = value.toLowerCase().trim().replace(/\s+/g, "-");
+
       setForm((prev) => ({
         ...prev,
         name: value,
-        slug: value.toLowerCase().trim().replace(/\s+/g, "-"),
+        slug,
+
+        seoTitle: prev.seoTitle || value,
+        seoSlug: prev.seoSlug || slug,
       }));
 
       return;
@@ -307,7 +317,55 @@ function ProductForm() {
                 إضافة مكون
               </button>
             </div>
+            {/* SEO Fields  */}
+            <div className="mt-10 rounded-3xl border p-6">
+              <h2 className="mb-6 text-xl font-bold">إعدادات SEO</h2>
 
+              <div className="grid gap-6">
+                <div>
+                  <label className="mb-2 block font-semibold">عنوان SEO</label>
+
+                  <input
+                    type="text"
+                    value={form.seoTitle}
+                    onChange={(e) => handleChange("seoTitle", e.target.value)}
+                    className="w-full rounded-2xl border p-4"
+                    placeholder="مثال: عسل السدر الطبيعي الأصلي"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block font-semibold">وصف SEO</label>
+
+                  <textarea
+                    rows={4}
+                    value={form.seoDescription}
+                    onChange={(e) =>
+                      handleChange("seoDescription", e.target.value)
+                    }
+                    className="w-full rounded-2xl border p-4"
+                    placeholder="وصف مختصر يظهر في نتائج جوجل"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block font-semibold">رابط SEO</label>
+
+                  <input
+                    type="text"
+                    value={form.seoSlug}
+                    onChange={(e) => handleChange("seoSlug", e.target.value)}
+                    className="w-full rounded-2xl border p-4"
+                    placeholder="sidr-honey"
+                  />
+
+                  <p className="mt-2 text-sm text-gray-500">
+                    الرابط النهائي: https://oshbahstore.com/product/
+                    {form.seoSlug || "product-slug"}
+                  </p>
+                </div>
+              </div>
+            </div>
             <div className="mt-10">
               <label className="mb-4 block text-lg font-semibold">
                 صور المنتج

@@ -26,12 +26,17 @@ function ProductDetails() {
   const { products, getProductBySlug, isLoading } = useStore();
   const { addToCart } = useCart();
   const product = getProductBySlug(slug);
-  const productImage =
-    product?.images?.[0] || "https://oshbahstore.com/logo.png";
-  const cleanDescription =
+  const seoTitle = product?.seoTitle || `${product?.name} | عُشبة ستور`;
+
+  const seoDescription =
+    product?.seoDescription ||
     product?.description?.replace(/<[^>]*>/g, "").slice(0, 300) ||
     `اشتري ${product?.name} من متجر عُشبة`;
 
+  const productSlug = product?.seoSlug || product?.slug;
+
+  const productImage =
+    product?.images?.[0] || "https://oshbahstore.com/logo.png";
   // حالة التحميل: لسه المنتجات ما وصلتش من الـ store
   const isStoreLoading = isLoading ?? products.length === 0;
 
@@ -95,25 +100,25 @@ function ProductDetails() {
   return (
     <section className="bg-gradient-to-b from-green-50 via-white to-green-50 py-16">
       <Helmet>
-        <title>{product.name} | عُشبة ستور</title>
+        <title>{seoTitle}</title>
 
-        <meta name="description" content={cleanDescription} />
+        <meta name="description" content={seoDescription} />
 
         <link
           rel="canonical"
-          href={`https://oshbahstore.com/product/${product.slug}`}
+          href={`https://oshbahstore.com/product/${productSlug}`}
         />
 
         {/* Open Graph */}
-        <meta property="og:title" content={`${product.name} | عُشبة ستور`} />
+        <meta property="og:title" content={seoTitle} />
 
-        <meta property="og:description" content={cleanDescription} />
+        <meta property="og:description" content={seoDescription} />
 
         <meta property="og:image" content={productImage} />
 
         <meta
           property="og:url"
-          content={`https://oshbahstore.com/product/${product.slug}`}
+          content={`https://oshbahstore.com/product/${productSlug}`}
         />
 
         <meta property="og:type" content="product" />
@@ -123,12 +128,9 @@ function ProductDetails() {
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
 
-        <meta name="twitter:title" content={`${product.name} | عُشبة ستور`} />
+        <meta name="twitter:title" content={seoTitle} />
 
-        <meta
-          name="twitter:description"
-          content={product.description || `اشتري ${product.name} من عُشبة ستور`}
-        />
+        <meta name="twitter:description" content={seoDescription} />
 
         <meta name="twitter:image" content={productImage} />
 
@@ -155,7 +157,7 @@ function ProductDetails() {
 
             offers: {
               "@type": "Offer",
-              url: `https://oshbahstore.com/product/${product.slug}`,
+              url: `https://oshbahstore.com/product/${productSlug}`,
               priceCurrency: "SAR",
               price: String(product.price),
 
@@ -199,7 +201,7 @@ function ProductDetails() {
                 "@type": "ListItem",
                 position: 4,
                 name: product.name,
-                item: `https://oshbahstore.com/product/${product.slug}`,
+                item: `https://oshbahstore.com/product/${productSlug}`,
               },
             ],
           })}
@@ -276,7 +278,7 @@ function ProductDetails() {
               {relatedProducts.map((item) => (
                 <Link
                   key={item.id}
-                  to={`/product/${item.slug}`}
+                  to={`/product/${item.seoSlug || item.slug}`}
                   className="
                     group overflow-hidden rounded-[30px]
                     bg-white shadow-lg
