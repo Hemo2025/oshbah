@@ -65,6 +65,10 @@ export function StoreProvider({ children }) {
     const newProduct = {
       ...product,
 
+      category: product.categories?.[0] || product.category || "",
+
+      categories: product.categories || [],
+
       slug: product.slug ? slugify(product.slug) : slugify(product.name),
 
       seoSlug: product.seoSlug
@@ -86,7 +90,6 @@ export function StoreProvider({ children }) {
 
       status: "active",
     };
-
     const ref = await addDoc(collection(db, "products"), newProduct);
 
     const savedProduct = {

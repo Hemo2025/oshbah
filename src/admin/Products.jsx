@@ -5,8 +5,31 @@ import { FaEdit, FaTrash, FaSearch } from "react-icons/fa";
 import Sidebar from "../components/admin/Sidebar";
 import Header from "../components/admin/Header";
 import { useStore } from "../hooks/useStore";
-
+import { downloadProductTemplate } from "../utils/excelTemplate"; //اضافة ملف اكسل
+import { readProductsExcel } from "../utils/importProducts";
 function Products() {
+  const { addProduct } = useStore();
+
+  const handleExcelUpload = async (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    try {
+      const products = await readProductsExcel(file);
+
+      console.log(products);
+
+      for (const product of products) {
+        await addProduct(product);
+      }
+
+      alert(`تم رفع ${products.length} منتجات بنجاح`);
+    } catch (error) {
+      console.error(error);
+      alert("حدث خطأ أثناء قراءة الملف");
+    }
+  };
   const navigate = useNavigate();
   const { products, deleteProduct } = useStore();
 
@@ -64,6 +87,21 @@ function Products() {
               >
                 + إضافة منتج
               </button>
+              <button
+                onClick={downloadProductTemplate}
+                className="rounded-xl bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700"
+              >
+                📥 تحميل قالب Excel
+              </button>
+              <label className="cursor-pointer rounded-xl bg-purple-600 px-6 py-3 text-white transition hover:bg-purple-700">
+                📤 رفع Excel
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  hidden
+                  onChange={handleExcelUpload}
+                />
+              </label>
             </div>
           </div>
 
