@@ -11,9 +11,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log("API CALLED");
-    console.log("BODY:", req.body);
-
     const { order } = req.body;
 
     if (!order) {
@@ -23,55 +20,119 @@ export default async function handler(req, res) {
       });
     }
 
+    const productsHtml =
+      order.items
+        ?.map(
+          (item) => `
+            <tr>
+              <td style="padding:8px;border:1px solid #eee;">
+                ${item.name}
+              </td>
+
+              <td style="padding:8px;border:1px solid #eee;text-align:center;">
+                ${item.quantity}
+              </td>
+
+              <td style="padding:8px;border:1px solid #eee;text-align:center;">
+                ${item.price} ر.س
+              </td>
+            </tr>
+          `,
+        )
+        .join("") || "";
+
     const result = await resend.emails.send({
       from: "Oshbah <onboarding@resend.dev>",
       to: ["oshbahstore@gmail.com"],
       subject: `🛒 طلب جديد ${order.orderNumber}`,
 
       html: `
-    <div style="font-family: Arial; direction: rtl;">
-      <h2>🛒 طلب جديد في متجر عُشبة</h2>
+        <div
+          style="
+            font-family:Arial,sans-serif;
+            direction:rtl;
+            max-width:700px;
+            margin:auto;
+            padding:20px;
+          "
+        >
+          <h2 style="color:#16a34a;">
+            🛒 طلب جديد في متجر عُشبة
+          </h2>
 
-      <p><strong>رقم الطلب:</strong> ${order.orderNumber}</p>
+          <p><strong>رقم الطلب:</strong> ${order.orderNumber}</p>
 
-      <p><strong>اسم العميل:</strong>
-      ${order.customer?.name}</p>
+          <p><strong>اسم العميل:</strong>
+            ${order.customer?.name}
+          </p>
 
-      <p><strong>رقم الجوال:</strong>
-      ${order.customer?.phone}</p>
+          <p><strong>رقم الجوال:</strong>
+            ${order.customer?.phone}
+          </p>
 
-      <p><strong>المدينة:</strong>
-      ${order.customer?.city}</p>
+          <p><strong>المدينة:</strong>
+            ${order.customer?.city}
+          </p>
 
-      <p><strong>العنوان:</strong>
-      ${order.customer?.address}</p>
+          <p><strong>العنوان:</strong>
+            ${order.customer?.address}
+          </p>
 
-      <p><strong>الإجمالي:</strong>
-      ${order.total} ر.س</p>
+          <p><strong>الملاحظات:</strong>
+            ${order.customer?.notes || "لا يوجد"}
+          </p>
 
-      <p><strong>الملاحظات:</strong>
-      ${order.customer?.notes || "لا يوجد"}</p>
+          <h3>المنتجات</h3>
 
-      <hr>
+          <table
+            style="
+              width:100%;
+              border-collapse:collapse;
+              margin-top:10px;
+            "
+          >
+            <thead>
+              <tr style="background:#f3f4f6;">
+                <th style="padding:10px;border:1px solid #eee;">
+                  المنتج
+                </th>
 
-      <a
-        href="https://oshbahstore.com/admin/orders"
-        style="
-          background:#16a34a;
-          color:white;
-          padding:12px 20px;
-          text-decoration:none;
-          border-radius:8px;
-          display:inline-block;
-        "
-      >
-        عرض الطلبات
-      </a>
-    </div>
-  `,
+                <th style="padding:10px;border:1px solid #eee;">
+                  الكمية
+                </th>
+
+                <th style="padding:10px;border:1px solid #eee;">
+                  السعر
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${productsHtml}
+            </tbody>
+          </table>
+
+          <h3 style="margin-top:20px;color:#16a34a;">
+            الإجمالي: ${order.total} ر.س
+          </h3>
+
+          <a
+            href="https://oshbahstore.com/admin/orders"
+            style="
+              background:#16a34a;
+              color:#fff;
+              padding:12px 20px;
+              text-decoration:none;
+              border-radius:8px;
+              display:inline-block;
+              margin-top:20px;
+            "
+          >
+            عرض الطلبات
+          </a>
+        </div>
+      `,
     });
-
-    console.log("RESEND RESULT:", result);
 
     return res.status(200).json({
       success: true,
