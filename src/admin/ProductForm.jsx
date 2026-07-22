@@ -17,7 +17,10 @@ const emptyProduct = {
   price: "",
   oldPrice: "",
   stock: "",
+
   category: "",
+  categories: [],
+
   description: "",
   usage: "",
   ingredients: [""],
@@ -37,11 +40,16 @@ function ProductForm() {
     if (existingProduct) {
       return {
         ...existingProduct,
+
         ingredients: existingProduct.ingredients?.length
           ? existingProduct.ingredients
           : [""],
 
         images: existingProduct.images?.length ? existingProduct.images : [],
+
+        categories:
+          existingProduct.categories ||
+          (existingProduct.category ? [existingProduct.category] : []),
       };
     }
 
@@ -155,13 +163,14 @@ function ProductForm() {
 
     setError("");
 
-    if (!form.name.trim() || !form.price || !form.category) {
+    if (!form.name.trim() || !form.price || !form.categories.length) {
       setError("يرجى تعبئة الحقول المطلوبة");
       return;
     }
 
     const payload = {
       ...form,
+      categories: form.categories,
       price: Number(form.price),
       oldPrice: form.oldPrice ? Number(form.oldPrice) : null,
       stock: Number(form.stock) || 0,
@@ -211,19 +220,46 @@ function ProductForm() {
               <div>
                 <label className="mb-2 block font-semibold">التصنيف *</label>
 
-                <select
-                  value={form.category}
-                  onChange={(e) => handleChange("category", e.target.value)}
-                  className="w-full rounded-2xl border p-4 outline-none focus:border-green-600"
-                >
-                  <option value="">اختر التصنيف</option>
+                <div className="flex flex-wrap gap-3 rounded-2xl border p-4">
+                  {categories.map((cat) => {
+                    const selected = form.categories.includes(cat.name);
 
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => {
+                          setForm((prev) => {
+                            const exists = prev.categories.includes(cat.name);
+
+                            const updated = exists
+                              ? prev.categories.filter(
+                                  (item) => item !== cat.name,
+                                )
+                              : [...prev.categories, cat.name];
+
+                            return {
+                              ...prev,
+                              categories: updated,
+                              category: updated[0] || "",
+                            };
+                          });
+                        }}
+                        className={`
+          rounded-full px-5 py-2 font-bold transition
+          ${
+            selected
+              ? "bg-green-600 text-white shadow"
+              : "bg-gray-100 text-gray-700 hover:bg-green-100"
+          }
+        `}
+                      >
+                        {selected ? "✓ " : ""}
+                        {cat.name}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               <div>

@@ -14,9 +14,13 @@ function Products() {
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
+      const categoriesText = Array.isArray(product.categories)
+        ? product.categories.join(" ")
+        : product.category || "";
+
       return (
         product.name.toLowerCase().includes(search.toLowerCase()) ||
-        product.category.toLowerCase().includes(search.toLowerCase())
+        categoriesText.toLowerCase().includes(search.toLowerCase())
       );
     });
   }, [products, search]);
@@ -107,7 +111,20 @@ function Products() {
 
                       <td className="font-semibold">{product.name}</td>
 
-                      <td>{product.category}</td>
+                      <td>
+                        <div className="flex flex-wrap gap-2">
+                          {(product.categories || [product.category]).map(
+                            (cat, index) => (
+                              <span
+                                key={index}
+                                className="rounded-full bg-green-100 px-3 py-1 text-xs text-green-700"
+                              >
+                                {cat}
+                              </span>
+                            ),
+                          )}
+                        </div>
+                      </td>
 
                       <td className="font-semibold text-green-700">
                         {product.price} ر.س

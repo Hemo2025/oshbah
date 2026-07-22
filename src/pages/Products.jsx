@@ -59,15 +59,21 @@ export default function Products() {
     const query = search.trim().toLowerCase();
 
     return products.filter((product) => {
+      const productCategories = Array.isArray(product.categories)
+        ? product.categories
+        : product.category
+          ? [product.category]
+          : [];
+
       const matchesCategory = activeCategory
-        ? product.category === activeCategory
+        ? productCategories.includes(activeCategory)
         : true;
 
       if (!query) return matchesCategory;
 
       const haystack = [
         product.name,
-        product.category,
+        ...productCategories,
         product.description,
         ...(product.ingredients || []),
       ]
@@ -175,95 +181,105 @@ export default function Products() {
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
-            {filteredProducts.map((product) => (
-              <Link
-                key={product.id}
-                to={`/product/${product.seoSlug || product.slug}`}
-                className="group relative overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-              >
-                <button
-                  onClick={(e) => handleToggleWishlist(e, product.id)}
-                  className={`absolute left-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow transition hover:scale-110 md:left-3 md:top-3 md:h-10 md:w-10 ${
-                    isInWishlist(product.id) ? "text-red-500" : "text-gray-400"
-                  }`}
+            {filteredProducts.map((product) => {
+              const productCategories = Array.isArray(product.categories)
+                ? product.categories
+                : product.category
+                  ? [product.category]
+                  : [];
+
+              return (
+                <Link
+                  key={product.id}
+                  to={`/product/${product.seoSlug || product.slug}`}
+                  className="group relative overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
-                  <FaHeart size={14} />
-                </button>
-
-                <div className="aspect-square overflow-hidden bg-gray-100">
-                  <img
-                    src={
-                      product.images?.[0] || "https://via.placeholder.com/500"
-                    }
-                    alt={product.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-
-                <div className="p-3 md:p-5">
-                  <div className="mb-2 flex text-[10px] text-yellow-400 md:text-sm">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <FaStar key={i} />
-                    ))}
-                  </div>
-
-                  <p className="mb-1 text-[11px] text-gray-500 md:text-sm">
-                    {product.category}
-                  </p>
-
-                  <h3 className="line-clamp-2 min-h-[40px] text-sm font-bold text-gray-800 md:text-lg">
-                    {product.name}
-                  </h3>
-                  <div className="mt-2 flex flex-wrap items-center gap-2 md:mt-3">
-                    <p className="text-base font-bold text-green-600 md:text-2xl">
-                      {product.price} ر.س
-                    </p>
-
-                    {product.oldPrice &&
-                      Number(product.oldPrice) > Number(product.price) && (
-                        <>
-                          <span className="text-xs text-gray-400 line-through md:text-base">
-                            {product.oldPrice} ر.س
-                          </span>
-
-                          <span className="rounded-full bg-red-100 px-2 py-1 text-[10px] font-bold text-red-600 md:text-xs">
-                            -
-                            {Math.round(
-                              ((Number(product.oldPrice) -
-                                Number(product.price)) /
-                                Number(product.oldPrice)) *
-                                100,
-                            )}
-                            %
-                          </span>
-                        </>
-                      )}
-                  </div>
-
                   <button
-                    onClick={(e) => handleAddToCart(e, product)}
-                    className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2 text-sm text-white transition md:mt-5 md:py-3 md:text-base ${
-                      addedId === product.id
-                        ? "bg-green-800"
-                        : "bg-green-600 hover:bg-green-700"
+                    onClick={(e) => handleToggleWishlist(e, product.id)}
+                    className={`absolute left-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow transition hover:scale-110 md:left-3 md:top-3 md:h-10 md:w-10 ${
+                      isInWishlist(product.id)
+                        ? "text-red-500"
+                        : "text-gray-400"
                     }`}
                   >
-                    {addedId === product.id ? (
-                      <>
-                        <FaCheck />
-                        أضيف للسلة
-                      </>
-                    ) : (
-                      <>
-                        <FaShoppingCart />
-                        أضف للسلة
-                      </>
-                    )}
+                    <FaHeart size={14} />
                   </button>
-                </div>
-              </Link>
-            ))}
+
+                  <div className="aspect-square overflow-hidden bg-gray-100">
+                    <img
+                      src={
+                        product.images?.[0] || "https://via.placeholder.com/500"
+                      }
+                      alt={product.name}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div className="p-3 md:p-5">
+                    <div className="mb-2 flex text-[10px] text-yellow-400 md:text-sm">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <FaStar key={i} />
+                      ))}
+                    </div>
+
+                    <p className="mb-1 text-[11px] text-gray-500 md:text-sm">
+                      {productCategories?.join(" • ") || product.category}
+                    </p>
+
+                    <h3 className="line-clamp-2 min-h-[40px] text-sm font-bold text-gray-800 md:text-lg">
+                      {product.name}
+                    </h3>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 md:mt-3">
+                      <p className="text-base font-bold text-green-600 md:text-2xl">
+                        {product.price} ر.س
+                      </p>
+
+                      {product.oldPrice &&
+                        Number(product.oldPrice) > Number(product.price) && (
+                          <>
+                            <span className="text-xs text-gray-400 line-through md:text-base">
+                              {product.oldPrice} ر.س
+                            </span>
+
+                            <span className="rounded-full bg-red-100 px-2 py-1 text-[10px] font-bold text-red-600 md:text-xs">
+                              -
+                              {Math.round(
+                                ((Number(product.oldPrice) -
+                                  Number(product.price)) /
+                                  Number(product.oldPrice)) *
+                                  100,
+                              )}
+                              %
+                            </span>
+                          </>
+                        )}
+                    </div>
+
+                    <button
+                      onClick={(e) => handleAddToCart(e, product)}
+                      className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2 text-sm text-white transition md:mt-5 md:py-3 md:text-base ${
+                        addedId === product.id
+                          ? "bg-green-800"
+                          : "bg-green-600 hover:bg-green-700"
+                      }`}
+                    >
+                      {addedId === product.id ? (
+                        <>
+                          <FaCheck />
+                          أضيف للسلة
+                        </>
+                      ) : (
+                        <>
+                          <FaShoppingCart />
+                          أضف للسلة
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
