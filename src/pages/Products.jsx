@@ -178,7 +178,7 @@ export default function Products() {
             {filteredProducts.map((product) => (
               <Link
                 key={product.id}
-                to={`/product/${product.slug}`}
+                to={`/product/${product.seoSlug || product.slug}`}
                 className="group relative overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
                 <button

@@ -53,7 +53,7 @@ export default function Wishlist() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {wishlistItems.map((product) => (
             <Link
-              to={`/product/${product.slug}`}
+              to={`/product/${product.seoSlug || product.slug}`}
               key={product.id}
               className="relative block overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
             >
@@ -72,9 +72,7 @@ export default function Wishlist() {
               />
 
               <div className="p-6">
-                <p className="mb-1 text-sm text-gray-500">
-                  {product.category}
-                </p>
+                <p className="mb-1 text-sm text-gray-500">{product.category}</p>
 
                 <h3 className="text-xl font-bold text-gray-800">
                   {product.name}

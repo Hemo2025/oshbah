@@ -26,7 +26,7 @@ function OffersSection() {
             return (
               <Link
                 key={product.id}
-                to={`/product/${product.slug}`}
+                to={`/product/${product.seoSlug || product.slug}`}
                 className="overflow-hidden rounded-3xl bg-green-50 shadow-md transition hover:-translate-y-2 hover:shadow-2xl"
               >
                 <div className="relative">

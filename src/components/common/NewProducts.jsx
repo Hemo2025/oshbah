@@ -21,16 +21,13 @@ function NewProducts() {
           {latestProducts.map((product) => (
             <Link
               key={product.id}
-              to={`/product/${product.slug}`}
+              to={`/product/${product.seoSlug || product.slug}`}
               className="group overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
             >
               {/* صورة المنتج */}
               <div className="aspect-square overflow-hidden bg-gray-100">
                 <img
-                  src={
-                    product.images?.[0] ||
-                    "https://via.placeholder.com/500"
-                  }
+                  src={product.images?.[0] || "https://via.placeholder.com/500"}
                   alt={product.name}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"

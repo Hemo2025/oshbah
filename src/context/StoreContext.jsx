@@ -16,6 +16,7 @@ function slugify(text = "") {
   return text
     .toString()
     .trim()
+    .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^\u0600-\u06FFa-zA-Z0-9-]/g, "");
 }
@@ -58,11 +59,21 @@ export function StoreProvider({ children }) {
 
   // ---------------- Products ----------------
 
+  // ---------------- Products ----------------
+
   const addProduct = async (product) => {
     const newProduct = {
       ...product,
 
       slug: product.slug ? slugify(product.slug) : slugify(product.name),
+
+      seoSlug: product.seoSlug
+        ? slugify(product.seoSlug)
+        : slugify(product.name),
+
+      seoTitle: product.seoTitle || product.name,
+
+      seoDescription: product.seoDescription || "",
 
       rating: 5,
       reviews: 0,
@@ -91,17 +102,37 @@ export function StoreProvider({ children }) {
   const updateProduct = async (id, updates) => {
     const productRef = doc(db, "products", id);
 
-    await updateDoc(productRef, {
+    const existingProduct = products.find((product) => product.id === id);
+
+    const updatedData = {
       ...updates,
+
+      slug: updates.slug
+        ? slugify(updates.slug)
+        : existingProduct?.slug || slugify(updates.name || ""),
+
+      seoSlug: updates.seoSlug
+        ? slugify(updates.seoSlug)
+        : existingProduct?.seoSlug ||
+          existingProduct?.slug ||
+          slugify(updates.name || ""),
+
+      seoTitle: updates.seoTitle || existingProduct?.seoTitle || updates.name,
+
+      seoDescription:
+        updates.seoDescription ?? existingProduct?.seoDescription ?? "",
+
       updatedAt: serverTimestamp(),
-    });
+    };
+
+    await updateDoc(productRef, updatedData);
 
     setProducts((prev) =>
       prev.map((product) =>
         product.id === id
           ? {
               ...product,
-              ...updates,
+              ...updatedData,
             }
           : product,
       ),
@@ -117,7 +148,7 @@ export function StoreProvider({ children }) {
   const getProductById = (id) => products.find((product) => product.id === id);
 
   const getProductBySlug = (slug) =>
-    products.find((product) => product.slug === slug);
+    products.find((product) => (product.seoSlug || product.slug) === slug);
 
   // ---------------- Categories ----------------
 
