@@ -95,7 +95,15 @@ export default function Checkout() {
         shipping: shippingCost,
         total: finalTotal,
       });
-
+      await fetch("/api/send-order-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          order,
+        }),
+      });
       setOrderPlaced(true);
       const myOrders = JSON.parse(localStorage.getItem("myOrders") || "[]");
 

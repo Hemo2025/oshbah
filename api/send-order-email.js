@@ -17,16 +17,19 @@ export default async function handler(req, res) {
       to: ["oshbahstore@gmail.com"],
       subject: `طلب جديد ${order.orderNumber}`,
       html: `
-        <h2>🛒 طلب جديد</h2>
+  <h2>🛒 طلب جديد</h2>
 
-        <p><strong>رقم الطلب:</strong> ${order.orderNumber}</p>
+  <p><strong>رقم الطلب:</strong> ${order.orderNumber}</p>
 
-        <p><strong>العميل:</strong> ${order.customer.name}</p>
+  <p><strong>العميل:</strong>
+  ${order.customer?.name || order.customerName}</p>
 
-        <p><strong>الهاتف:</strong> ${order.customer.phone}</p>
+  <p><strong>الهاتف:</strong>
+  ${order.customer?.phone || order.customerPhone}</p>
 
-        <p><strong>الإجمالي:</strong> ${order.total} ر.س</p>
-      `,
+  <p><strong>الإجمالي:</strong>
+  ${order.total} ر.س</p>
+`,
     });
 
     return res.status(200).json({
