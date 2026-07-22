@@ -30,12 +30,12 @@ function ProductDetails() {
   useEffect(() => {
     if (!product) return;
 
-    const correctSlug = product.seoSlug || product.slug;
-
-    if (slug !== correctSlug) {
-      navigate(`/product/${correctSlug}`, {
-        replace: true,
-      });
+    if (
+      product.seoSlug &&
+      slug === product.slug &&
+      product.slug !== product.seoSlug
+    ) {
+      navigate(`/product/${product.seoSlug}`, { replace: true });
     }
   }, [product, slug, navigate]);
   const seoTitle = product?.seoTitle || `${product?.name} | عُشبة ستور`;
