@@ -11,6 +11,15 @@ import ReviewForm from "../components/product/ReviewForm";
 import ProductReviews from "../components/product/ProductReviews";
 function ProductDetails() {
   const { slug } = useParams();
+  console.log("URL slug:", slug);
+  console.log(
+    "Products:",
+    products?.map((p) => ({
+      name: p.name,
+      slug: p.slug,
+      seoSlug: p.seoSlug,
+    })),
+  );
   const navigate = useNavigate();
   const [showFloatingProduct, setShowFloatingProduct] = useState(false);
 
@@ -50,7 +59,7 @@ function ProductDetails() {
   const productImage =
     product?.images?.[0] || "https://oshbahstore.com/logo.png";
   // حالة التحميل: لسه المنتجات ما وصلتش من الـ store
-  const isStoreLoading = isLoading ?? products.length === 0;
+  const isStoreLoading = isLoading || (products.length === 0 && !product);
 
   if (isStoreLoading) {
     return (
