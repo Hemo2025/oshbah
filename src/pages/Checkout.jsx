@@ -27,7 +27,15 @@ export default function Checkout() {
   const { createOrder } = useOrders();
   const navigate = useNavigate();
   const { settings } = useSettings();
-  const [customer, setCustomer] = useState(emptyCustomer);
+  const [customer, setCustomer] = useState(() => {
+    try {
+      const savedCustomer = localStorage.getItem("checkoutCustomer");
+
+      return savedCustomer ? JSON.parse(savedCustomer) : emptyCustomer;
+    } catch {
+      return emptyCustomer;
+    }
+  });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -45,12 +53,15 @@ export default function Checkout() {
   if (cartItems.length === 0 && !orderPlaced) {
     return <Navigate to="/cart" replace />;
   }
-
   const handleChange = (field, value) => {
-    setCustomer((prev) => ({
-      ...prev,
+    const updatedCustomer = {
+      ...customer,
       [field]: value,
-    }));
+    };
+
+    setCustomer(updatedCustomer);
+
+    localStorage.setItem("checkoutCustomer", JSON.stringify(updatedCustomer));
   };
 
   const validate = () => {
