@@ -10,7 +10,6 @@ import {
   FaTruck,
   FaCheckCircle,
 } from "react-icons/fa";
-
 import { useCart } from "../hooks/useCart";
 import { useOrders } from "../hooks/useOrders";
 import { trackEvent } from "../lib/metaPixel";
@@ -38,6 +37,7 @@ export default function Checkout() {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [orderCompleted, setOrderCompleted] = useState(false);
 
   const shippingFee = settings?.shipping?.shippingFee || 0;
 
@@ -60,7 +60,7 @@ export default function Checkout() {
       currency: "SAR",
     });
   }, [cartItems, finalTotal]);
-  if (cartItems.length === 0) {
+  if (cartItems.length === 0 && !orderCompleted) {
     return <Navigate to="/cart" replace />;
   }
   const handleChange = (field, value) => {
@@ -150,6 +150,8 @@ export default function Checkout() {
 
         localStorage.setItem("myOrders", JSON.stringify(myOrders));
       }
+      setOrderCompleted(true);
+
       clearCart();
 
       navigate(`/order-confirmation/${order.orderNumber}`, {
