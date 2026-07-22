@@ -95,7 +95,9 @@ export default function Checkout() {
         shipping: shippingCost,
         total: finalTotal,
       });
-      await fetch("/api/send-order-email", {
+      console.log("ORDER:", order);
+
+      const response = await fetch("/api/send-order-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,6 +106,10 @@ export default function Checkout() {
           order,
         }),
       });
+
+      const data = await response.json();
+
+      console.log("EMAIL RESPONSE:", data);
       setOrderPlaced(true);
       const myOrders = JSON.parse(localStorage.getItem("myOrders") || "[]");
 
