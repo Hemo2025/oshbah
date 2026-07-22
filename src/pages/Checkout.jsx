@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useSettings } from "../hooks/useSettings";
 import {
@@ -13,7 +13,7 @@ import {
 
 import { useCart } from "../hooks/useCart";
 import { useOrders } from "../hooks/useOrders";
-
+import { trackEvent } from "../lib/metaPixel";
 const emptyCustomer = {
   name: "",
   phone: "",
@@ -38,7 +38,7 @@ export default function Checkout() {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
+
   const shippingFee = settings?.shipping?.shippingFee || 0;
 
   const freeShippingThreshold = settings?.shipping?.freeShippingThreshold || 0;
@@ -49,8 +49,18 @@ export default function Checkout() {
       : shippingFee;
 
   const finalTotal = cartTotal + shippingCost;
+  useEffect(() => {
+    if (!cartItems.length) return;
 
-  if (cartItems.length === 0 && !orderPlaced) {
+    trackEvent("InitiateCheckout", {
+      content_ids: cartItems.map((item) => item.id),
+      content_type: "product",
+      num_items: cartItems.reduce((total, item) => total + item.quantity, 0),
+      value: finalTotal,
+      currency: "SAR",
+    });
+  }, [cartItems, finalTotal]);
+  if (cartItems.length === 0) {
     return <Navigate to="/cart" replace />;
   }
   const handleChange = (field, value) => {
@@ -120,8 +130,19 @@ export default function Checkout() {
 
       const data = await response.json();
 
+      trackEvent("Purchase", {
+        content_ids: order.items.map((item) => item.id),
+        content_type: "product",
+        num_items: order.items.reduce(
+          (total, item) => total + item.quantity,
+          0,
+        ),
+        value: Number(order.total),
+        currency: "SAR",
+      });
+
       console.log("EMAIL RESPONSE:", data);
-      setOrderPlaced(true);
+
       const myOrders = JSON.parse(localStorage.getItem("myOrders") || "[]");
 
       if (!myOrders.includes(order.orderNumber)) {

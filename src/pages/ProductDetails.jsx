@@ -9,6 +9,7 @@ import { useCart } from "../hooks/useCart";
 import { Helmet } from "react-helmet-async";
 import ReviewForm from "../components/product/ReviewForm";
 import ProductReviews from "../components/product/ProductReviews";
+import { trackEvent } from "../lib/metaPixel";
 function ProductDetails() {
   const { slug } = useParams();
 
@@ -28,6 +29,17 @@ function ProductDetails() {
   const { products, getProductBySlug, isLoading } = useStore();
   const { addToCart } = useCart();
   const product = getProductBySlug(slug);
+  useEffect(() => {
+    if (!product) return;
+
+    trackEvent("ViewContent", {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: "product",
+      value: Number(product.price),
+      currency: "SAR",
+    });
+  }, [product]);
   console.log("URL slug:", slug);
   console.log(
     "Products:",
@@ -375,7 +387,17 @@ function ProductDetails() {
             </div>
 
             <button
-              onClick={() => addToCart(product)}
+              onClick={() => {
+                addToCart(product);
+
+                trackEvent("AddToCart", {
+                  content_name: product.name,
+                  content_ids: [product.id],
+                  content_type: "product",
+                  value: Number(product.price),
+                  currency: "SAR",
+                });
+              }}
               className="
     rounded-xl bg-green-600
     px-4 py-2 text-white

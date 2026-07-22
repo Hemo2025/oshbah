@@ -38,3 +38,9 @@ export const trackPageView = () => {
 
   window.fbq("track", "PageView");
 };
+
+export const trackEvent = (eventName, data = {}) => {
+  if (!window.fbq) return;
+
+  window.fbq("track", eventName, data);
+};

@@ -9,6 +9,7 @@ import {
 
 import { useCart } from "../../hooks/useCart";
 import { useWishlist } from "../../hooks/useWishlist";
+import { trackEvent } from "../../lib/metaPixel";
 
 function ProductActions({ product }) {
   const { addToCart } = useCart();
@@ -32,6 +33,14 @@ function ProductActions({ product }) {
 
     addToCart(product, quantity);
 
+    trackEvent("AddToCart", {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: "product",
+      value: Number(product.price) * quantity,
+      currency: "SAR",
+    });
+
     window.dispatchEvent(
       new CustomEvent("cart-animation", {
         detail: {
@@ -39,13 +48,13 @@ function ProductActions({ product }) {
         },
       }),
     );
+
     setAdded(true);
 
     setTimeout(() => {
       setAdded(false);
     }, 1500);
   };
-
   return (
     <div className="mt-10 rounded-3xl border border-green-100 bg-green-50 p-6">
       {/* Quantity */}
