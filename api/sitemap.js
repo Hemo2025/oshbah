@@ -23,15 +23,17 @@ export default async function handler(req, res) {
     }));
 
     const productUrls = products
-      .filter((product) => product.slug)
+      .filter((product) => product.seoSlug || product.slug)
       .map(
         (product) => `
-        <url>
-          <loc>https://oshbahstore.com/product/${product.slug}</loc>
-          <changefreq>weekly</changefreq>
-          <priority>0.8</priority>
-        </url>
-      `,
+      <url>
+        <loc>https://oshbahstore.com/product/${
+          product.seoSlug || product.slug
+        }</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+    `,
       )
       .join("");
 
