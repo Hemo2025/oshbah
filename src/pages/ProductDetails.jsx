@@ -9,7 +9,6 @@ import { useCart } from "../hooks/useCart";
 import { Helmet } from "react-helmet-async";
 import ReviewForm from "../components/product/ReviewForm";
 import ProductReviews from "../components/product/ProductReviews";
-import { useNavigate } from "react-router-dom";
 function ProductDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
