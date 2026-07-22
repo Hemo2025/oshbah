@@ -148,7 +148,9 @@ export function StoreProvider({ children }) {
   const getProductById = (id) => products.find((product) => product.id === id);
 
   const getProductBySlug = (slug) =>
-    products.find((product) => (product.seoSlug || product.slug) === slug);
+    products.find(
+      (product) => product.slug === slug || product.seoSlug === slug,
+    );
 
   // ---------------- Categories ----------------
 

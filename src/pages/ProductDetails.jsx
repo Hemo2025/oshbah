@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
 import { useStore } from "../hooks/useStore";
 import { useEffect, useState } from "react";
@@ -9,8 +9,10 @@ import { useCart } from "../hooks/useCart";
 import { Helmet } from "react-helmet-async";
 import ReviewForm from "../components/product/ReviewForm";
 import ProductReviews from "../components/product/ProductReviews";
+import { useNavigate } from "react-router-dom";
 function ProductDetails() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [showFloatingProduct, setShowFloatingProduct] = useState(false);
 
   useEffect(() => {
@@ -26,6 +28,17 @@ function ProductDetails() {
   const { products, getProductBySlug, isLoading } = useStore();
   const { addToCart } = useCart();
   const product = getProductBySlug(slug);
+  useEffect(() => {
+    if (!product) return;
+
+    const correctSlug = product.seoSlug || product.slug;
+
+    if (slug !== correctSlug) {
+      navigate(`/product/${correctSlug}`, {
+        replace: true,
+      });
+    }
+  }, [product, slug, navigate]);
   const seoTitle = product?.seoTitle || `${product?.name} | عُشبة ستور`;
 
   const seoDescription =
