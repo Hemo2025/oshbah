@@ -1,5 +1,4 @@
-import { adminDb } from "./firebaseAdmin";
-
+import { adminDb } from "./firebaseAdmin.js";
 export default async function handler(req, res) {
   try {
     const snapshot = await adminDb.collection("products").get();
