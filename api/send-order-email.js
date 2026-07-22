@@ -41,10 +41,10 @@ export default async function handler(req, res) {
         )
         .join("") || "";
 
-    const result = await resend.emails.send({
+    await resend.emails.send({
       from: "Oshbah <onboarding@resend.dev>",
       to: ["oshbahstore@gmail.com"],
-      subject: `🛒 طلب جديد ${order.orderNumber}`,
+      subject: `🛒 طلب جديد ${order.orderNumber} - ${order.customer?.name}`,
 
       html: `
         <div
@@ -136,7 +136,6 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      result,
     });
   } catch (error) {
     console.error("EMAIL ERROR:", error);
