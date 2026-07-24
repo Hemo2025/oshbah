@@ -13,11 +13,13 @@ import {
 import { useCart } from "../../hooks/useCart";
 import { useWishlist } from "../../hooks/useWishlist";
 import { useStore } from "../../hooks/useStore";
-
+import { useSettings } from "../../hooks/useSettings";
+import { motion, AnimatePresence } from "framer-motion";
 function Header() {
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
   const { categories } = useStore();
+  const { settings } = useSettings();
   const location = useLocation();
 
   const [searchInput, setSearchInput] = useState("");
@@ -25,6 +27,26 @@ function Header() {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [cartAnimating, setCartAnimating] = useState(false);
   const [cartPopup, setCartPopup] = useState(null);
+  const messages = settings?.announcementBar?.messages ?? [
+    "🚚 الشحن مجاني للطلبات فوق 199 ريال",
+    "📍 توصيل مجاني داخل جدة",
+    "💳 الدفع عند الاستلام متوفر",
+  ];
+
+  const interval = settings?.announcementBar?.interval ?? 4000;
+
+  const [currentMessage, setCurrentMessage] = useState(0);
+
+  useEffect(() => {
+    if (messages.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrentMessage((prev) => (prev + 1) % messages.length);
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [messages.length, interval]);
+
   useEffect(() => {
     if (menuOpen) {
       setTimeout(() => {
@@ -89,76 +111,111 @@ function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-[99990] border-b border-gray-100 bg-white/90 backdrop-blur-xl shadow-sm transition-all duration-300">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
-          {/* Mobile menu button */}
-          <button
-            onClick={() => {
-              setMenuOpen(true);
-              setDrawerVisible(false);
+      <header className="fixed top-0 left-0 right-0 z-[99990]">
+        {/* Announcement Bar */}
+        {settings?.announcementBar?.enabled && (
+          <div
+            className="h-10 overflow-hidden"
+            style={{
+              backgroundColor:
+                settings?.announcementBar?.backgroundColor || "#15803d",
+              color: settings?.announcementBar?.textColor || "#ffffff",
             }}
-            className="text-2xl text-gray-700 md:hidden"
-            aria-label="فتح القائمة"
           >
-            <FaBars />
-          </button>
-
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <FaLeaf className="text-3xl text-green-600" />
-
-            <h1 className="text-2xl font-bold text-green-700 sm:text-3xl">
-              عُشبة ستور
-            </h1>
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden gap-8 font-medium md:flex">
-            <Link to="/" className="transition hover:text-green-600">
-              الرئيسية
-            </Link>
-
-            <Link to="/products" className="transition hover:text-green-600">
-              كل المنتجات
-            </Link>
-
-            <Link to="/categories" className="transition hover:text-green-600">
-              التصنيفات
-            </Link>
-
-            <Link to="/about" className="transition hover:text-green-600">
-              تواصل معنا
-            </Link>
-          </nav>
-
-          {/* Desktop Search */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="hidden items-center overflow-hidden rounded-full border lg:flex"
-          >
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="ابحث عن منتج..."
-              className="w-64 px-4 py-2 outline-none"
-            />
-
+            <div className="relative flex h-full items-center justify-center overflow-hidden px-4">
+              <AnimatePresence initial={false}>
+                <motion.div
+                  key={currentMessage}
+                  initial={{ y: 24, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -24, opacity: 0 }}
+                  transition={{
+                    duration: 0.22,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="absolute inset-0 flex items-center justify-center will-change-transform"
+                >
+                  <span className="text-sm font-medium whitespace-nowrap">
+                    {messages[currentMessage]}
+                  </span>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
+        <div className="border-b border-gray-100 bg-white/90 backdrop-blur-xl shadow-sm transition-all duration-300">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+            {/* Mobile menu button */}
             <button
-              type="submit"
-              className="bg-green-600 px-4 py-3 text-white transition hover:bg-green-700"
+              onClick={() => {
+                setMenuOpen(true);
+                setDrawerVisible(false);
+              }}
+              className="text-2xl text-gray-700 md:hidden"
+              aria-label="فتح القائمة"
             >
-              <FaSearch />
+              <FaBars />
             </button>
-          </form>
 
-          {/* Icons */}
-          {/* Icons */}
-          <div className="flex items-center gap-2 text-xl sm:gap-3">
-            <Link
-              to="/track-order"
-              title="متابعة الطلب"
-              className="
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2">
+              <FaLeaf className="text-3xl text-green-600" />
+
+              <h1 className="text-2xl font-bold text-green-700 sm:text-3xl">
+                عُشبة ستور
+              </h1>
+            </Link>
+
+            {/* Desktop Nav */}
+            <nav className="hidden gap-8 font-medium md:flex">
+              <Link to="/" className="transition hover:text-green-600">
+                الرئيسية
+              </Link>
+
+              <Link to="/products" className="transition hover:text-green-600">
+                كل المنتجات
+              </Link>
+
+              <Link
+                to="/categories"
+                className="transition hover:text-green-600"
+              >
+                التصنيفات
+              </Link>
+
+              <Link to="/about" className="transition hover:text-green-600">
+                تواصل معنا
+              </Link>
+            </nav>
+
+            {/* Desktop Search */}
+            <form
+              onSubmit={handleSearchSubmit}
+              className="hidden items-center overflow-hidden rounded-full border lg:flex"
+            >
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="ابحث عن منتج..."
+                className="w-64 px-4 py-2 outline-none"
+              />
+
+              <button
+                type="submit"
+                className="bg-green-600 px-4 py-3 text-white transition hover:bg-green-700"
+              >
+                <FaSearch />
+              </button>
+            </form>
+
+            {/* Icons */}
+            {/* Icons */}
+            <div className="flex items-center gap-2 text-xl sm:gap-3">
+              <Link
+                to="/track-order"
+                title="متابعة الطلب"
+                className="
       flex h-11 w-11 items-center justify-center
       rounded-full
       text-gray-700
@@ -168,14 +225,14 @@ function Header() {
       hover:shadow-md
       active:scale-90
     "
-            >
-              <FaUser />
-            </Link>
+              >
+                <FaUser />
+              </Link>
 
-            <Link
-              to="/wishlist"
-              title="المفضلة"
-              className="
+              <Link
+                to="/wishlist"
+                title="المفضلة"
+                className="
       relative
       flex h-11 w-11 items-center justify-center
       rounded-full
@@ -186,12 +243,12 @@ function Header() {
       hover:shadow-md
       active:scale-90
     "
-            >
-              <FaHeart />
+              >
+                <FaHeart />
 
-              {wishlistCount > 0 && (
-                <span
-                  className="
+                {wishlistCount > 0 && (
+                  <span
+                    className="
           absolute -right-1 -top-1
           flex min-h-[20px] min-w-[20px]
           items-center justify-center
@@ -203,16 +260,16 @@ function Header() {
           text-white
           shadow-md
         "
-                >
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
+                  >
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
 
-            <Link
-              to="/cart"
-              title="السلة"
-              className="
+              <Link
+                to="/cart"
+                title="السلة"
+                className="
     relative
     flex h-11 w-11 items-center justify-center
     rounded-full
@@ -223,10 +280,10 @@ function Header() {
     hover:shadow-md
     active:scale-90
   "
-            >
-              {cartPopup && (
-                <span
-                  className="
+              >
+                {cartPopup && (
+                  <span
+                    className="
         absolute -top-7 right-0
         z-50
         rounded-full
@@ -238,21 +295,21 @@ function Header() {
         pointer-events-none
         animate-[cartFly_1s_ease]
       "
-                >
-                  +{cartPopup}
-                </span>
-              )}
+                  >
+                    +{cartPopup}
+                  </span>
+                )}
 
-              <FaShoppingCart
-                className={`
+                <FaShoppingCart
+                  className={`
     transition-all duration-500
     ${cartAnimating ? "animate-[cartShake_800ms_cubic-bezier(.22,1,.36,1)]" : ""}
   `}
-              />
+                />
 
-              {cartCount > 0 && (
-                <span
-                  className={`
+                {cartCount > 0 && (
+                  <span
+                    className={`
     absolute -right-1 -top-1
     flex min-h-[20px] min-w-[20px]
     items-center justify-center
@@ -265,11 +322,12 @@ function Header() {
     shadow-md
     ${cartAnimating ? "animate-[cartBadge_600ms_ease]" : ""}
   `}
-                >
-                  {cartCount}
-                </span>
-              )}
-            </Link>
+                  >
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -448,7 +506,11 @@ ${drawerVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}
       )}
 
       {/* مساحة حتى لا يغطي الهيدر المحتوى */}
-      <div className="h-[88px]" />
+      <div
+        className={
+          settings?.announcementBar?.enabled ? "h-[128px]" : "h-[88px]"
+        }
+      />
     </>
   );
 }

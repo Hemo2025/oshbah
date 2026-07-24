@@ -5,6 +5,7 @@ import ScrollToTop from "../common/ScrollToTop";
 import ScrollToHash from "../common/ScrollToHash";
 import WhatsAppFloat from "../common/WhatsAppFloat";
 import MetaPixelTracker from "../common/MetaPixelTracker";
+
 function Layout() {
   return (
     <>
@@ -14,8 +15,11 @@ function Layout() {
       <ScrollToHash />
 
       <Header />
+
       <Outlet />
+
       <Footer />
+
       <WhatsAppFloat />
     </>
   );

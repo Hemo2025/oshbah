@@ -21,6 +21,23 @@ export const DEFAULT_SETTINGS = {
   maintenanceMode: false,
   maintenanceMessage: "المتجر تحت الصيانة وسيعود قريباً.",
 
+  // الشريط الإعلاني
+  announcementBar: {
+    enabled: true,
+
+    interval: 4500,
+
+    backgroundColor: "#15803d",
+
+    textColor: "#ffffff",
+
+    messages: [
+      "🚚 الشحن مجاني للطلبات فوق 199 ريال",
+      "📍 توصيل مجاني داخل جدة",
+      "💳 الدفع عند الاستلام متوفر",
+    ],
+  },
+
   // المظهر
   theme: {
     primaryColor: "#16a34a",

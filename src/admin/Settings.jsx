@@ -15,7 +15,7 @@ import Header from "../components/admin/Header";
 
 import { useSettings } from "../hooks/useSettings";
 import { DEFAULT_SETTINGS } from "../context/default-settings";
-
+import { FaBullhorn } from "react-icons/fa";
 function Settings() {
   const { settings, updateSettings, resetSettings } = useSettings();
 
@@ -75,6 +75,11 @@ function Settings() {
       id: "notifications",
       label: "الإشعارات",
       icon: <FaBell />,
+    },
+    {
+      id: "announcement",
+      label: "الشريط الإعلاني",
+      icon: <FaBullhorn />,
     },
     {
       id: "advanced",
@@ -319,7 +324,157 @@ function Settings() {
                 </label>
               </div>
             )}
+            {/* الشريط الإعلاني */}
 
+            {tab === "announcement" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold">الشريط الإعلاني</h2>
+
+                <label className="flex items-center justify-between rounded-xl border p-4">
+                  <span>تفعيل الشريط</span>
+
+                  <input
+                    type="checkbox"
+                    checked={form.announcementBar?.enabled}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        announcementBar: {
+                          ...form.announcementBar,
+                          enabled: e.target.checked,
+                        },
+                      })
+                    }
+                  />
+                </label>
+
+                <div>
+                  <label className="mb-2 block font-medium">
+                    مدة تبديل الرسائل (مللي ثانية)
+                  </label>
+
+                  <input
+                    type="number"
+                    className="w-full rounded-xl border p-3"
+                    value={form.announcementBar?.interval}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        announcementBar: {
+                          ...form.announcementBar,
+                          interval: Number(e.target.value),
+                        },
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="font-medium">الرسائل</label>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setForm({
+                          ...form,
+                          announcementBar: {
+                            ...form.announcementBar,
+                            messages: [
+                              ...(form.announcementBar?.messages || []),
+                              "",
+                            ],
+                          },
+                        })
+                      }
+                      className="rounded-lg bg-green-600 px-3 py-2 text-sm text-white hover:bg-green-700"
+                    >
+                      + إضافة رسالة
+                    </button>
+                  </div>
+
+                  {(form.announcementBar?.messages || []).map((msg, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        className="flex-1 rounded-xl border p-3"
+                        placeholder={`الرسالة ${index + 1}`}
+                        value={msg}
+                        onChange={(e) => {
+                          const messages = [...form.announcementBar.messages];
+                          messages[index] = e.target.value;
+
+                          setForm({
+                            ...form,
+                            announcementBar: {
+                              ...form.announcementBar,
+                              messages,
+                            },
+                          });
+                        }}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const messages = [...form.announcementBar.messages];
+                          messages.splice(index, 1);
+
+                          setForm({
+                            ...form,
+                            announcementBar: {
+                              ...form.announcementBar,
+                              messages,
+                            },
+                          });
+                        }}
+                        className="rounded-xl bg-red-500 px-4 text-white hover:bg-red-600"
+                      >
+                        حذف
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block font-medium">
+                      لون الخلفية
+                    </label>
+
+                    <input
+                      type="color"
+                      value={form.announcementBar?.backgroundColor || "#15803d"}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          announcementBar: {
+                            ...form.announcementBar,
+                            backgroundColor: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block font-medium">لون النص</label>
+
+                    <input
+                      type="color"
+                      value={form.announcementBar?.textColor || "#ffffff"}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          announcementBar: {
+                            ...form.announcementBar,
+                            textColor: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
             {/* متقدمة */}
 
             {tab === "advanced" && (
