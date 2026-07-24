@@ -14,6 +14,7 @@ export default function ImportProducts() {
   const [message, setMessage] = useState("");
 
   // تحميل قالب Excel
+  // تحميل قالب Excel
   const downloadTemplate = () => {
     const headers = [
       "name",
@@ -30,7 +31,22 @@ export default function ImportProducts() {
       "images",
     ];
 
-    const worksheet = XLSX.utils.aoa_to_sheet([headers]);
+    const example = [
+      "اسم المنتج",
+      50,
+      70,
+      10,
+      "زيوت, طبيعية",
+      "وصف المنتج",
+      "طريقة الاستخدام",
+      "المكونات",
+      "عنوان SEO",
+      "وصف SEO",
+      "product-slug",
+      "https://res.cloudinary.com/uhgjzlgn/image/upload/v123/product1.jpg,https://res.cloudinary.com/uhgjzlgn/image/upload/v123/product2.jpg",
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet([headers, example]);
 
     const workbook = XLSX.utils.book_new();
 
@@ -49,6 +65,7 @@ export default function ImportProducts() {
       const data = await readProductsExcel(file);
 
       const result = validateProducts(data);
+      
 
       setProducts(result.validProducts);
 

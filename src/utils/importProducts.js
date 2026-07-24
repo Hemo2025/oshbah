@@ -98,6 +98,14 @@ export function validateProducts(products) {
 
       valid = false;
     }
+    if (product.images.length) {
+      product.images.forEach((image) => {
+        if (!image.startsWith("http")) {
+          errors.push(`الصف ${index + 2}: رابط الصورة غير صحيح`);
+          valid = false;
+        }
+      });
+    }
 
     return valid;
   });

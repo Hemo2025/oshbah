@@ -6,7 +6,7 @@ export function downloadProductTemplate(categories = []) {
     "price",
     "oldPrice",
     "stock",
-    "category",
+    "categories",
     "description",
     "usage",
     "ingredients",
@@ -18,9 +18,21 @@ export function downloadProductTemplate(categories = []) {
 
   const worksheet = XLSX.utils.aoa_to_sheet([
     headers,
-    ["", "", "", "", "اختر من القائمة", "", "", "", "", "", "", ""],
+    [
+      "",
+      "",
+      "",
+      "",
+      "اختر من القائمة",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "https://res.cloudinary.com/uhgjzlgn/image/upload/v123/product-image.jpg",
+    ],
   ]);
-
   // إنشاء قائمة التصنيفات المخفية
   const categorySheet = XLSX.utils.aoa_to_sheet([
     ["Categories"],
