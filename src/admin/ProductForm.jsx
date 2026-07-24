@@ -6,6 +6,7 @@ import Sidebar from "../components/admin/Sidebar";
 import Header from "../components/admin/Header";
 import { useStore } from "../hooks/useStore";
 import ProductEditor from "../components/admin/ProductEditor";
+import { uploadToCloudinary } from "../services/cloudinary";
 const emptyProduct = {
   name: "",
   slug: "",
@@ -130,25 +131,21 @@ function ProductForm() {
   const handleImages = async (files) => {
     if (!files?.length) return;
 
-    const fileArray = Array.from(files);
+    try {
+      const fileArray = Array.from(files);
 
-    const images = await Promise.all(
-      fileArray.map(
-        (file) =>
-          new Promise((resolve) => {
-            const reader = new FileReader();
+      const uploadedImages = await Promise.all(
+        fileArray.map((file) => uploadToCloudinary(file)),
+      );
 
-            reader.onloadend = () => resolve(reader.result);
-
-            reader.readAsDataURL(file);
-          }),
-      ),
-    );
-
-    setForm((prev) => ({
-      ...prev,
-      images: [...prev.images, ...images],
-    }));
+      setForm((prev) => ({
+        ...prev,
+        images: [...prev.images, ...uploadedImages],
+      }));
+    } catch (error) {
+      console.error(error);
+      setError("حدث خطأ أثناء رفع الصور");
+    }
   };
 
   const removeImage = (index) => {
