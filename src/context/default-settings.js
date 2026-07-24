@@ -37,7 +37,24 @@ export const DEFAULT_SETTINGS = {
       "💳 الدفع عند الاستلام متوفر",
     ],
   },
+  // إعدادات السلايدر الرئيسي
+  heroSlider: {
+    enabled: true,
 
+    autoplay: true,
+
+    autoplayDelay: 5000,
+
+    showArrows: true,
+
+    showDots: true,
+
+    desktopHeight: 420,
+
+    mobileHeight: 220,
+
+    overlay: 0.35,
+  },
   // المظهر
   theme: {
     primaryColor: "#16a34a",
