@@ -138,6 +138,8 @@ function ProductForm() {
         fileArray.map((file) => uploadToCloudinary(file)),
       );
 
+      console.log("Cloudinary images:", uploadedImages);
+
       setForm((prev) => ({
         ...prev,
         images: [...prev.images, ...uploadedImages],
@@ -146,8 +148,7 @@ function ProductForm() {
       console.error(error);
       setError("حدث خطأ أثناء رفع الصور");
     }
-  };
-
+  };    
   const removeImage = (index) => {
     setForm((prev) => ({
       ...prev,
