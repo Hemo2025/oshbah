@@ -262,3 +262,13 @@ body,
 .animate-fade {
     animation: fade 4s ease-in-out;
 }
+
+.namename {
+    background-color: #15803d;
+    padding: 20px;
+    border-radius: 20px;
+    color: aliceblue;
+    width: fit-content;
+    margin: 20px auto;
+
+}
