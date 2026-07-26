@@ -12,7 +12,7 @@ import {
 
 import { useAuth } from "../../hooks/useAuth";
 
-function Sidebar({ newOrdersCount = 0 }) {
+function Sidebar({ newOrdersCount = 0, isOpen = false, onClose }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -61,9 +61,19 @@ function Sidebar({ newOrdersCount = 0 }) {
   ];
 
   return (
-    <aside className="flex h-screen w-72 flex-col bg-green-700 text-white">
+    <aside
+      className={`
+fixed top-0 right-0 z-50
+flex h-screen w-72 flex-col
+overflow-y-auto
+bg-green-700 text-white shadow-xl
+transition-transform duration-300
+lg:translate-x-0
+${isOpen ? " translate-x-0" : " translate-x-full"}
+`}
+    >
       <div className="border-b border-green-600 p-6 text-center">
-        <h1 className="text-3xl font-bold">🌿 عشبة ستور</h1>
+        <h1 className="text-2xl font-bold">🌿 عشبة ستور</h1>
 
         <p className="mt-2 text-sm text-green-100">لوحة التحكم</p>
       </div>
@@ -73,6 +83,7 @@ function Sidebar({ newOrdersCount = 0 }) {
           <NavLink
             key={item.path}
             to={item.path}
+            onClick={onClose}
             className={({ isActive }) =>
               `mb-3 flex items-center justify-between rounded-xl px-4 py-3 transition ${
                 isActive ? "bg-white text-green-700" : "hover:bg-green-600"

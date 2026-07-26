@@ -1,19 +1,34 @@
-import { FaBell, FaSearch, FaUserCircle } from "react-icons/fa";
+import { FaBell, FaSearch, FaUserCircle, FaBars } from "react-icons/fa";
 import { useAuth } from "../../hooks/useAuth";
 
-function Header() {
+function Header({ onMenuClick }) {
   const { adminName } = useAuth();
 
   return (
-    <header className="flex items-center justify-between rounded-2xl bg-white p-5 shadow-sm">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">لوحة التحكم</h1>
+    <header className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm lg:p-5">
+      <div className="flex items-center gap-3">
+        {/* زر القائمة في الجوال */}
+        <button
+          onClick={onMenuClick}
+          className="rounded-xl bg-gray-100 p-3 lg:hidden"
+        >
+          <FaBars />
+        </button>
 
-        <p className="text-sm text-gray-500">مرحبًا بك في إدارة متجر عشبة 🌿</p>
+        <div>
+          <h1 className="text-xl font-bold text-gray-800 lg:text-2xl">
+            لوحة التحكم
+          </h1>
+
+          <p className="hidden text-sm text-gray-500 sm:block">
+            مرحبًا بك في إدارة متجر عشبة 🌿
+          </p>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative">
+      <div className="flex items-center gap-3">
+        {/* البحث يختفي في الجوال */}
+        <div className="relative hidden xl:block">
           <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
 
           <input
@@ -32,7 +47,7 @@ function Header() {
         <div className="flex items-center gap-2">
           <FaUserCircle className="text-4xl text-green-700" />
 
-          <div>
+          <div className="hidden md:block">
             <h3 className="font-semibold">{adminName}</h3>
 
             <p className="text-sm text-gray-500">المدير</p>
