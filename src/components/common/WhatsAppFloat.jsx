@@ -6,11 +6,11 @@ export default function WhatsAppFloat() {
   const phone = "966599304548";
 
   const location = useLocation();
-  const { products } = useStore();
+  const { getProductBySlug } = useStore();
 
-  const slug = decodeURIComponent(location.pathname.split("/").pop());
+const slug = decodeURIComponent(location.pathname.split("/").pop());
 
-  const currentProduct = products.find((p) => p.slug === slug);
+const currentProduct = getProductBySlug(slug);
 
   let message = "السلام عليكم، أريد الاستفسار عن منتجات عُشبة ستور.";
 
