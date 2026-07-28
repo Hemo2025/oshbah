@@ -79,7 +79,7 @@ function ProductDetails() {
                 <div className="aspect-square w-full rounded-3xl bg-gray-200" />
               </div>
 
-              <div className="p-6 lg:p-10">
+              <div className="product-features mb-8 grid grid-cols-2 gap-4">
                 <div className="mb-4 h-8 w-3/4 rounded bg-gray-200" />
                 <div className="mb-8 h-6 w-1/3 rounded bg-gray-200" />
 
@@ -146,7 +146,7 @@ function ProductDetails() {
         </div>
 
         {/* Main Product */}
-        <div className="overflow-hidden rounded-[35px] bg-white shadow-2xl">
+        <div className="product-page-card overflow-hidden rounded-[35px] bg-white shadow-2xl">
           <div className="grid lg:grid-cols-2">
             {/* Images */}
             <div className="bg-gradient-to-br from-green-50 to-white p-6 lg:p-10">
@@ -160,7 +160,7 @@ function ProductDetails() {
               <div className="my-8 h-px bg-gray-200" />
 
               {/* Features */}
-              <div className="mb-8 grid grid-cols-2 gap-4">
+              <div className="product-features mb-8 grid grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-green-100 p-5 text-center transition hover:shadow-lg">
                   <div className="text-4xl">🚚</div>
 
