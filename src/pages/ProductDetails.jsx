@@ -6,10 +6,13 @@ import ProductGallery from "../components/product/ProductGallery";
 import ProductInfo from "../components/product/ProductInfo";
 import ProductActions from "../components/product/ProductActions";
 import { useCart } from "../hooks/useCart";
-import { Helmet } from "react-helmet-async";
+
 import ReviewForm from "../components/product/ReviewForm";
 import ProductReviews from "../components/product/ProductReviews";
 import { trackEvent } from "../lib/metaPixel";
+
+import SEO from "../components/SEO/SEO";
+
 function ProductDetails() {
   const { slug } = useParams();
 
@@ -60,17 +63,7 @@ function ProductDetails() {
       navigate(`/product/${product.seoSlug}`, { replace: true });
     }
   }, [product, slug, navigate]);
-  const seoTitle = product?.seoTitle || `${product?.name} | عُشبة ستور`;
 
-  const seoDescription =
-    product?.seoDescription ||
-    product?.description?.replace(/<[^>]*>/g, "").slice(0, 300) ||
-    `اشتري ${product?.name} من متجر عُشبة`;
-
-  const productSlug = product?.seoSlug || product?.slug;
-
-  const productImage =
-    product?.images?.[0] || "https://oshbahstore.com/logo.png";
   // حالة التحميل: لسه المنتجات ما وصلتش من الـ store
   const isStoreLoading = isLoading || (products.length === 0 && !product);
 
@@ -133,114 +126,7 @@ function ProductDetails() {
 
   return (
     <section className="bg-gradient-to-b from-green-50 via-white to-green-50 py-16">
-      <Helmet>
-        <title>{seoTitle}</title>
-
-        <meta name="description" content={seoDescription} />
-
-        <link
-          rel="canonical"
-          href={`https://oshbahstore.com/product/${productSlug}`}
-        />
-
-        {/* Open Graph */}
-        <meta property="og:title" content={seoTitle} />
-
-        <meta property="og:description" content={seoDescription} />
-
-        <meta property="og:image" content={productImage} />
-
-        <meta
-          property="og:url"
-          content={`https://oshbahstore.com/product/${productSlug}`}
-        />
-
-        <meta property="og:type" content="product" />
-
-        <meta property="og:site_name" content="عُشبة ستور" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-
-        <meta name="twitter:title" content={seoTitle} />
-
-        <meta name="twitter:description" content={seoDescription} />
-
-        <meta name="twitter:image" content={productImage} />
-
-        {/* Google Product Schema */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-
-            name: product.name,
-
-            image: product.images?.length ? product.images : [productImage],
-
-            description:
-              product.description?.replace(/<[^>]*>/g, "") ||
-              `اشتري ${product.name} من متجر عُشبة ستور`,
-
-            sku: product.id,
-
-            brand: {
-              "@type": "Brand",
-              name: "عُشبة ستور",
-            },
-
-            offers: {
-              "@type": "Offer",
-              url: `https://oshbahstore.com/product/${productSlug}`,
-              priceCurrency: "SAR",
-              price: String(product.price),
-
-              availability:
-                Number(product.stock) > 0
-                  ? "https://schema.org/InStock"
-                  : "https://schema.org/OutOfStock",
-
-              seller: {
-                "@type": "Organization",
-                name: "عُشبة ستور",
-              },
-            },
-          })}
-        </script>
-        {/* Breadcrumb Schema */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "الرئيسية",
-                item: "https://oshbahstore.com/",
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "المنتجات",
-                item: "https://oshbahstore.com/products",
-              },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: product.category || "منتجات طبيعية",
-                item: `https://oshbahstore.com/products?category=${product.category}`,
-              },
-              {
-                "@type": "ListItem",
-                position: 4,
-                name: product.name,
-                item: `https://oshbahstore.com/product/${productSlug}`,
-              },
-            ],
-          })}
-        </script>
-      </Helmet>
+      <SEO product={product} />
       <div className="mx-auto max-w-7xl px-5">
         {/* Breadcrumb */}
         <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-gray-500">
