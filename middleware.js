@@ -7,7 +7,7 @@ export const config = {
 
 // User-Agents لأشهر بوتات محركات البحث ومواقع مشاركة الروابط
 const BOT_UA_REGEX =
-  /googlebot|bingbot|yandex|baiduspider|duckduckbot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|slackbot|telegrambot|discordbot|applebot/i;
+  /googlebot|google-inspectiontool|storebot-google|bingbot|yandex|baiduspider|duckduckbot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|slackbot|telegrambot|discordbot|applebot/i;
 
 // ضع Project ID تبع Firebase هنا كمتغير بيئة في Vercel (Settings > Environment Variables)
 // eslint-disable-next-line no-undef
