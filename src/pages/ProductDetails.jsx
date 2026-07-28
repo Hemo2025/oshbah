@@ -73,7 +73,7 @@ function ProductDetails() {
         <div className="mx-auto max-w-7xl animate-pulse px-5">
           <div className="mb-8 h-4 w-48 rounded bg-gray-200" />
 
-          <div className="overflow-hidden rounded-[35px] bg-white shadow-2xl">
+          <div className="product-page-card overflow-hidden rounded-[35px] bg-white shadow-2xl">
             <div className="grid lg:grid-cols-2">
               <div className="bg-gradient-to-br from-green-50 to-white p-6 lg:p-10">
                 <div className="aspect-square w-full rounded-3xl bg-gray-200" />
@@ -85,7 +85,7 @@ function ProductDetails() {
 
                 <div className="my-8 h-px bg-gray-200" />
 
-                <div className="mb-8 grid grid-cols-2 gap-4">
+                <div className="product-features mb-8 grid grid-cols-2 gap-4">
                   <div className="h-28 rounded-2xl bg-gray-200" />
                   <div className="h-28 rounded-2xl bg-gray-200" />
                 </div>
@@ -154,7 +154,7 @@ function ProductDetails() {
             </div>
 
             {/* Info */}
-            <div className="p-6 lg:p-10">
+            <div className="product-info p-6 lg:p-10">
               <ProductInfo product={product} />
 
               <div className="my-8 h-px bg-gray-200" />
@@ -189,7 +189,7 @@ function ProductDetails() {
         <ReviewForm productId={product.id} />
         {/* Related */}
         {relatedProducts.length > 0 && (
-          <div className="mt-20">
+          <div className="related-products mt-20">
             <h2 className="mb-10 text-center text-4xl font-bold text-gray-800">
               منتجات مشابهة
             </h2>
@@ -250,7 +250,7 @@ function ProductDetails() {
       </div>
       {showFloatingProduct && (
         <div
-          className="
+          className="floating-cart
       fixed bottom-4 left-1/2 z-50
       w-[95%] max-w-md
       -translate-x-1/2

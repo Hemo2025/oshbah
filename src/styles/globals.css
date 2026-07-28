@@ -272,3 +272,73 @@ body,
     margin: 20px auto;
 
 }
+
+/* ===== تحسين صفحة المنتج للجوال ===== */
+@media (max-width: 768px) {
+
+    /* تقليل المسافات */
+    section {
+        padding-top: 1rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    /* الكرت الرئيسي */
+    .product-page-card {
+        border-radius: 20px !important;
+        box-shadow: none !important;
+    }
+
+    /* الصور */
+    .product-page-card img {
+        border-radius: 18px;
+    }
+
+    /* عمود المعلومات */
+    .product-info {
+        padding: 18px !important;
+    }
+
+    /* الأزرار */
+    .product-info button {
+        min-height: 54px;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    /* بطاقات المميزات */
+    .product-features {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .product-features>div {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .product-features div div {
+        font-size: 28px !important;
+    }
+
+    .product-features p {
+        font-size: 13px;
+    }
+
+    .product-features span {
+        display: none;
+    }
+
+    /* المنتجات المشابهة */
+    .related-products img {
+        height: 170px !important;
+    }
+
+    /* الشريط العائم */
+    .floating-cart {
+        width: calc(100% - 20px) !important;
+        bottom: 20px !important;
+        border-radius: 18px;
+    }
+
+}       
