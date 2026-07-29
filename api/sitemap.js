@@ -22,53 +22,108 @@ export default async function handler(req, res) {
       ...doc.data(),
     }));
 
-    const productUrls = products
-      .filter((product) => product.seoSlug || product.slug)
+    const today = new Date().toISOString().split("T")[0];
+
+    // الصفحات الثابتة
+    const staticPages = [
+      {
+        url: "https://oshbahstore.com/",
+        changefreq: "daily",
+        priority: "1.0",
+      },
+      {
+        url: "https://oshbahstore.com/products",
+        changefreq: "daily",
+        priority: "0.9",
+      },
+      {
+        url: "https://oshbahstore.com/about",
+        changefreq: "monthly",
+        priority: "0.7",
+      },
+      {
+        url: "https://oshbahstore.com/privacy-policy",
+        changefreq: "yearly",
+        priority: "0.3",
+      },
+      {
+        url: "https://oshbahstore.com/terms",
+        changefreq: "yearly",
+        priority: "0.3",
+      },
+      {
+        url: "https://oshbahstore.com/shipping-policy",
+        changefreq: "yearly",
+        priority: "0.3",
+      },
+      {
+        url: "https://oshbahstore.com/return-policy",
+        changefreq: "yearly",
+        priority: "0.3",
+      },
+    ];
+
+    const staticUrls = staticPages
       .map(
-        (product) => `
-      <url>
-        <loc>https://oshbahstore.com/product/${
-          product.seoSlug || product.slug
-        }</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    `,
+        (page) => `
+  <url>
+    <loc>${page.url}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`,
       )
       .join("");
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    // صفحات المنتجات
+    const productUrls = products
+      .filter((product) => product.seoSlug || product.slug)
+      .map((product) => {
+        const slug = encodeURIComponent(product.seoSlug || product.slug);
 
-  <url>
-    <loc>https://oshbahstore.com/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
+        // استخدام تاريخ تحديث المنتج إن وجد
+        let lastmod = today;
 
+        if (product.updatedAt?.toDate) {
+          lastmod = product.updatedAt.toDate().toISOString().split("T")[0];
+        } else if (product.updatedAt) {
+          lastmod = new Date(product.updatedAt).toISOString().split("T")[0];
+        }
+
+        return `
   <url>
-    <loc>https://oshbahstore.com/products</loc>
+    <loc>https://oshbahstore.com/product/${slug}</loc>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>
+  </url>`;
+      })
+      .join("");
 
-  <url>
-    <loc>https://oshbahstore.com/contact</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
-  ${productUrls}
+${staticUrls}
+
+${productUrls}
 
 </urlset>`;
 
-    res.setHeader("Content-Type", "application/xml");
+    res.setHeader("Content-Type", "application/xml; charset=UTF-8");
+    res.setHeader(
+      "Cache-Control",
+      "public, s-maxage=3600, stale-while-revalidate=86400",
+    );
+
     res.status(200).send(xml);
   } catch (error) {
     console.error("Sitemap Error:", error);
 
     res.status(500).json({
       error: "Failed to generate sitemap",
+      details: error.message,
     });
   }
 }

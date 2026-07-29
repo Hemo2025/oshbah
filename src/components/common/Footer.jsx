@@ -5,17 +5,16 @@ export default function Footer() {
   return (
     <footer className="bg-green-950 text-white mt-20">
       <div className="max-w-7xl mx-auto px-6 py-14">
-        <div className="grid md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Logo */}
           <div>
             <h2 className="text-3xl font-bold text-green-400 mb-4">عُشبة</h2>
 
             <p className="text-gray-300 leading-8">
               متجر متخصص في المنتجات الطبيعية والعناية الصحية، نوفر منتجات أصلية
-             مع شحن سريع.
+              مع شحن سريع.
             </p>
           </div>
-
           {/* Links */}
           <div>
             <h3 className="font-bold text-lg mb-5">روابط سريعة</h3>
@@ -25,9 +24,40 @@ export default function Footer() {
               <Link to="/products">المنتجات</Link>
               <Link to="/products?category=العروض+والبكجات">العروض</Link>
               <Link to="/about">تواصل معنا</Link>
+              <Link to="/return-policy">سياسة الاسترجاع والاستبدال</Link>
             </div>
           </div>
+          {/* السياسات */}
+          <div>
+            <h3 className="font-bold text-lg mb-5">السياسات</h3>
 
+            <div className="flex flex-col gap-3 text-gray-300">
+              <Link
+                className="hover:text-green-400 duration-300"
+                to="/return-policy"
+              >
+                سياسة الاسترجاع والاستبدال
+              </Link>
+
+              <Link
+                className="hover:text-green-400 duration-300"
+                to="/shipping-policy"
+              >
+                سياسة الشحن والتوصيل
+              </Link>
+
+              <Link
+                className="hover:text-green-400 duration-300"
+                to="/privacy-policy"
+              >
+                سياسة الخصوصية
+              </Link>
+
+              <Link className="hover:text-green-400 duration-300" to="/terms">
+                الشروط والأحكام
+              </Link>
+            </div>
+          </div>{" "}
           {/* Contact */}
           <div>
             <h3 className="font-bold text-lg mb-5">تواصل معنا</h3>
@@ -38,7 +68,6 @@ export default function Footer() {
               {/* <p>الرياض - المملكة العربية السعودية</p> */}
             </div>
           </div>
-
           {/* Features */}
           <div>
             <h3 className="font-bold text-lg mb-5">لماذا عُشبة ؟</h3>
@@ -66,7 +95,7 @@ export default function Footer() {
 
         <div className="border-t border-green-900 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-400 text-sm">
-            © 2026 عُشبة | جميع الحقوق محفوظة
+            © 2026 عُشبة ستور | جميع الحقوق محفوظة
           </p>
 
           <div className="flex gap-4 text-2xl">

@@ -13,6 +13,10 @@ import OrderConfirmation from "../pages/OrderConfirmation";
 import TrackOrder from "../pages/TrackOrder";
 import NotFound from "../pages/NotFound";
 import CategoriesPage from "../pages/CategoriesPage";
+import ReturnPolicy from "../pages/ReturnPolicy";
+import ShippingPolicy from "../pages/ShippingPolicy";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
+import Terms from "../pages/Terms";
 
 // Admin Pages
 import Login from "../admin/Login";
@@ -70,6 +74,22 @@ const router = createBrowserRouter([
       {
         path: "categories",
         element: <CategoriesPage />,
+      },
+      {
+        path: "/return-policy",
+        element: <ReturnPolicy />,
+      },
+      {
+        path: "/shipping-policy",
+        element: <ShippingPolicy />,
+      },
+      {
+        path: "/privacy-policy",
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: "/terms",
+        element: <Terms />,
       },
     ],
   },
