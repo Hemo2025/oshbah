@@ -55,11 +55,30 @@ export default function Cart() {
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Cart items */}
           <div className="lg:col-span-2">
-            <div className="overflow-hidden rounded-2xl bg-white shadow">
+            <div
+              className="overflow-hidden rounded-3xl hover:shadow-lg
+transition-all
+duration-300 bg-white shadow"
+            >
               {cartItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex flex-col gap-4 border-b p-6 last:border-b-0 sm:flex-row sm:items-center"
+                  className="
+flex flex-col
+gap-4
+border-b
+p-6
+
+transition-all
+duration-300
+
+hover:bg-green-50
+
+last:border-b-0
+
+sm:flex-row
+sm:items-center
+"
                 >
                   <img
                     src={item.images?.[0]}
@@ -77,7 +96,12 @@ export default function Cart() {
                     </p>
                   </div>
 
-                  <div className="flex items-center overflow-hidden rounded-xl border">
+                  <div
+                    className="flex items-center overflow-hidden rounded-2xl
+border
+border-green-100
+shadow-sm hover:bg-green-50"
+                  >
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       className="px-3 py-2 text-gray-600 hover:bg-gray-100"
@@ -103,7 +127,10 @@ export default function Cart() {
 
                   <button
                     onClick={() => removeFromCart(item.id)}
-                    className="rounded-lg bg-red-500 p-3 text-white transition hover:bg-red-600"
+                    className="rounded-lg border border-red-200
+bg-red-50
+text-red-500 hover:bg-red-500
+hover:text-white p-3 text-white transition hover:bg-red-600"
                   >
                     <FaTrash />
                   </button>
@@ -113,7 +140,39 @@ export default function Cart() {
           </div>
 
           {/* Order summary */}
-          <div className="h-fit rounded-2xl bg-white p-6 shadow">
+          <div className="sticky top-24 h-fit rounded-3xl border border-green-100 bg-white p-6 shadow-xl">
+            {/* Order Status */}
+            <div className="mb-6 rounded-2xl border border-green-100 bg-gradient-to-r from-green-50 to-white p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-white text-xl">
+                  📦
+                </div>
+
+                <div className="flex-1">
+                  <p className="font-bold text-gray-800">طلبك جاهز للتأكيد</p>
+
+                  <p className="text-sm text-gray-500">
+                    سيتم تجهيز الطلب خلال 24 ساعة بعد تأكيده.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-6 rounded-3xl bg-green-50 p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-white">
+                  💵
+                </div>
+
+                <div>
+                  <p className="font-bold text-gray-800">الدفع عند الاستلام</p>
+
+                  <p className="text-sm text-gray-500">
+                    ادفع عند استلام طلبك بكل أمان
+                  </p>
+                </div>
+              </div>
+            </div>
             <h2 className="mb-6 text-xl font-bold text-gray-800">ملخص الطلب</h2>
 
             <div className="flex justify-between text-gray-600">
@@ -176,10 +235,67 @@ export default function Cart() {
 
             <button
               onClick={() => navigate("/checkout")}
-              className="mt-6 w-full rounded-xl bg-green-600 py-3 text-white transition hover:bg-green-700"
+              className="
+    group
+    relative
+    mt-6
+    flex
+    h-14
+    w-full
+    items-center
+    justify-center
+    gap-2
+    overflow-hidden
+    rounded-xl
+
+    bg-gradient-to-r
+    from-green-600
+    via-emerald-600
+    to-green-700
+
+    font-bold
+    text-white
+
+    shadow-lg
+
+    transition-all
+    duration-300
+
+    hover:-translate-y-1
+    hover:shadow-2xl
+  "
             >
-              إتمام الشراء
+              <span
+                className="
+      absolute
+      -left-20
+      top-0
+      h-full
+      w-10
+      -skew-x-12
+      bg-white/30
+      blur-sm
+      animate-[shine_3s_linear_infinite]
+    "
+              />
+              ⚡ متابعة إتمام الطلب
             </button>
+
+            <div className="mt-5 rounded-3xl border border-green-100 bg-green-50 p-4">
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  🚚 شحن سريع لجميع مناطق المملكة
+                </div>
+
+                <div className="flex items-center gap-2">
+                  💵 الدفع عند الاستلام
+                </div>
+
+                <div className="flex items-center gap-2">
+                  🔒 معلوماتك آمنة ومحمية
+                </div>
+              </div>
+            </div>
 
             <Link
               to="/products"

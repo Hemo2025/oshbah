@@ -341,4 +341,15 @@ body,
         border-radius: 18px;
     }
 
-}       
+}
+
+
+@keyframes shine {
+    0% {
+        left: -30%;
+    }
+
+    100% {
+        left: 130%;
+    }
+}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaShoppingCart,
   FaCheck,
@@ -13,6 +14,7 @@ import { trackEvent } from "../../lib/metaPixel";
 
 function ProductActions({ product }) {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
   const [quantity, setQuantity] = useState(1);
@@ -55,6 +57,21 @@ function ProductActions({ product }) {
       setAdded(false);
     }, 1500);
   };
+  const handleBuyNow = () => {
+    if (outOfStock) return;
+
+    addToCart(product, quantity);
+
+    trackEvent("AddToCart", {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: "product",
+      value: Number(product.price) * quantity,
+      currency: "SAR",
+    });
+
+    navigate("/checkout");
+  };
   return (
     <div className="mt-10 rounded-3xl border border-green-100 bg-green-50 p-6">
       {/* Quantity */}
@@ -93,65 +110,218 @@ function ProductActions({ product }) {
       </div>
 
       {/* Buttons */}
-      <div className="flex flex-col gap-4 sm:flex-row">
-        {/* Cart */}
+      <div className="flex flex-col gap-4">
+        {/* Buy Now */}
         <button
-          onClick={handleAddToCart}
+          onClick={handleBuyNow}
           disabled={outOfStock}
-          className={`
-            flex flex-1 items-center justify-center gap-3
-            rounded-2xl py-4 text-lg font-bold
-            text-white shadow-lg transition-all duration-300
-            disabled:cursor-not-allowed
-            disabled:bg-gray-300
+          className="
+    group
+    relative
+    overflow-hidden
+    flex
+    h-14
+    w-full
+    items-center
+    justify-center
+    gap-2
+    rounded-xl
 
-         ${
-           added
-             ? "bg-green-800 scale-105 animate-pulse"
-             : "bg-green-600 hover:-translate-y-1 hover:bg-green-700"
-         }
-          `}
+    bg-gradient-to-r
+    from-emerald-600
+    via-green-600
+    to-emerald-700
+
+    text-base
+    font-bold
+    text-white
+
+    shadow-lg
+    transition-all
+    duration-300
+
+    hover:-translate-y-0.5
+    hover:shadow-2xl
+
+    active:scale-[0.98]
+
+    disabled:cursor-not-allowed
+    disabled:opacity-60
+  "
         >
-          {added ? (
-            <>
-              <FaCheck />
-              تمت الإضافة
-            </>
-          ) : (
-            <>
-              <FaShoppingCart />
-              أضف إلى السلة
-            </>
-          )}
+          {/* Shine */}
+          <span className="absolute inset-0 overflow-hidden rounded-xl">
+            <span
+              className="
+        absolute
+        -left-20
+        top-0
+        h-full
+        w-10
+        -skew-x-12
+        bg-white/25
+        blur-[2px]
+        animate-[shine_3s_linear_infinite]
+      "
+            />
+          </span>
+
+          <span className="relative text-xl">⚡</span>
+
+          <span className="relative">اشترِ الآن</span>
         </button>
 
-        {/* Wishlist */}
-        <button
-          onClick={() => toggleWishlist(product.id)}
-          className={`
-            flex items-center justify-center gap-3
-            rounded-2xl px-6 py-4
-            font-bold transition-all duration-300
+        <div className="flex gap-3">
+          {/* Add To Cart */}
+          <button
+            onClick={handleAddToCart}
+            disabled={outOfStock}
+            className={`
+group
+flex
+h-14
+flex-1
+items-center
+justify-center
+gap-2
 
-            ${
-              inWishlist
-                ? "bg-red-500 text-white shadow-lg"
-                : "border bg-white text-gray-600 hover:border-red-300 hover:text-red-500"
-            }
-          `}
-        >
-          <FaHeart />
+rounded-xl
 
-          {inWishlist ? "في المفضلة" : "المفضلة"}
-        </button>
+text-base
+font-bold
+
+shadow-md
+
+transition-all
+duration-300
+
+active:scale-[0.98]
+
+${
+  added
+    ? "bg-green-800 text-white"
+    : "border border-green-600 bg-white text-green-700 hover:bg-green-50 hover:shadow-lg"
+}
+`}
+          >
+            {added ? (
+              <>
+                <FaCheck className="text-xl" />
+                تمت الإضافة
+              </>
+            ) : (
+              <>
+                <FaShoppingCart className="text-xl transition-transform group-hover:scale-110" />
+                أضف للسلة
+              </>
+            )}
+          </button>
+
+          {/* Wishlist */}
+          <button
+            onClick={() => toggleWishlist(product.id)}
+            className={`
+flex
+h-14
+w-14
+items-center
+justify-center
+
+rounded-xl
+
+text-lg
+
+transition-all
+duration-300
+
+active:scale-95
+
+${
+  inWishlist
+    ? "bg-red-500 text-white shadow-lg"
+    : "border border-gray-200 bg-white text-gray-500 hover:border-red-300 hover:bg-red-50 hover:text-red-500"
+}
+`}
+          >
+            <FaHeart />
+          </button>
+        </div>
       </div>
-
       {/* Quick Buy */}
+      {/* Purchase Benefits */}
+      <div className="mt-5 rounded-3xl border border-green-200 bg-white p-4">
+        <div className="grid gap-3 text-sm text-gray-700 sm:grid-cols-2">
+          <div className="flex items-center gap-2">
+            <span>🚚</span>
+            <span>شحن سريع لجميع مناطق المملكة</span>
+          </div>
 
+          <div className="flex items-center gap-2">
+            <span>💵</span>
+            <span>الدفع عند الاستلام</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span>🔒</span>
+            <span>طلبك ومعلوماتك محفوظة وآمنة</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span>📞</span>
+            <span>دعم عبر واتساب عند الحاجة</span>
+          </div>
+        </div>
+      </div>
+      {/* Order Steps */}
+      <div className="mt-5 rounded-2xl border border-dashed border-green-200 bg-green-50 p-5">
+        <h3 className="mb-4 text-center font-bold text-gray-800">
+          كيف تتم عملية الطلب؟
+        </h3>
+
+        <div className="grid grid-cols-4 gap-2 text-center">
+          <div>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-xl text-white">
+              🛒
+            </div>
+
+            <p className="mt-2 text-xs font-semibold text-gray-700">
+              اطلب الآن
+            </p>
+          </div>
+
+          <div>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-xl text-white">
+              📦
+            </div>
+
+            <p className="mt-2 text-xs font-semibold text-gray-700">
+              تجهيز الطلب
+            </p>
+          </div>
+
+          <div>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-xl text-white">
+              🚚
+            </div>
+
+            <p className="mt-2 text-xs font-semibold text-gray-700">الشحن</p>
+          </div>
+
+          <div>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-xl text-white">
+              💵
+            </div>
+
+            <p className="mt-2 text-xs font-semibold text-gray-700">
+              الدفع عند الاستلام
+            </p>
+          </div>
+        </div>
+      </div>
       {/* Stock Warning */}
       {product.stock > 0 && product.stock <= 5 && (
         <div className="mt-5 rounded-2xl bg-orange-100 p-4 text-center font-semibold text-orange-700">
-          ⚠️ متبقي فقط {product.stock} قطع
+          🔥 أسرع بالطلب، متبقي فقط {product.stock} قطع
         </div>
       )}
 

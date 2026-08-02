@@ -172,7 +172,7 @@ function ProductDetails() {
                 <div className="rounded-2xl border border-green-100 p-5 text-center transition hover:shadow-lg">
                   <div className="text-4xl">🌿</div>
 
-                  <p className="mt-3 font-bold">منتج طبيعي</p>
+                  <p className="mt-3 font-bold">الضمان الذهبي</p>
 
                   <span className="text-sm text-gray-500">جودة مضمونة</span>
                 </div>

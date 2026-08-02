@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useSettings } from "../hooks/useSettings";
+import Select from "react-select";
 import {
   FaMapMarkerAlt,
   FaUser,
@@ -21,6 +22,89 @@ const emptyCustomer = {
   notes: "",
 };
 
+const cityOptions = [
+  { value: "الرياض", label: "الرياض (Riyadh)" },
+  { value: "جدة", label: "جدة (Jeddah)" },
+  { value: "مكة المكرمة", label: "مكة المكرمة (Makkah)" },
+  { value: "المدينة المنورة", label: "المدينة المنورة (Madinah)" },
+  { value: "الدمام", label: "الدمام (Dammam)" },
+  { value: "الخبر", label: "الخبر (Khobar)" },
+  { value: "الظهران", label: "الظهران (Dhahran)" },
+  { value: "الجبيل", label: "الجبيل (Jubail)" },
+  {
+    value: "الجبيل الصناعية",
+    label: "الجبيل الصناعية (Jubail Industrial City)",
+  },
+  { value: "الأحساء", label: "الأحساء (Al Ahsa)" },
+  { value: "الهفوف", label: "الهفوف (Hofuf)" },
+  { value: "المبرز", label: "المبرز (Al Mubarraz)" },
+  { value: "القطيف", label: "القطيف (Qatif)" },
+  { value: "رأس تنورة", label: "رأس تنورة (Ras Tanura)" },
+  { value: "الخفجي", label: "الخفجي (Khafji)" },
+  { value: "حفر الباطن", label: "حفر الباطن (Hafar Al-Batin)" },
+
+  { value: "الطائف", label: "الطائف (Taif)" },
+  { value: "رابغ", label: "رابغ (Rabigh)" },
+  { value: "ينبع", label: "ينبع (Yanbu)" },
+  { value: "ينبع الصناعية", label: "ينبع الصناعية (Yanbu Industrial City)" },
+  { value: "خليص", label: "خليص (Khulais)" },
+  { value: "بدر", label: "بدر (Badr)" },
+
+  { value: "أبها", label: "أبها (Abha)" },
+  { value: "خميس مشيط", label: "خميس مشيط (Khamis Mushait)" },
+  { value: "أحد رفيدة", label: "أحد رفيدة (Ahad Rafidah)" },
+  { value: "محايل عسير", label: "محايل عسير (Muhayil)" },
+  { value: "بيشة", label: "بيشة (Bisha)" },
+  { value: "النماص", label: "النماص (Al Namas)" },
+  { value: "بلقرن", label: "بلقرن (Balqarn)" },
+
+  { value: "جازان", label: "جازان (Jazan)" },
+  { value: "صبيا", label: "صبيا (Sabya)" },
+  { value: "أبو عريش", label: "أبو عريش (Abu Arish)" },
+  { value: "صامطة", label: "صامطة (Samtah)" },
+  { value: "الدرب", label: "الدرب (Al Darb)" },
+
+  { value: "نجران", label: "نجران (Najran)" },
+  { value: "شرورة", label: "شرورة (Sharurah)" },
+
+  { value: "الباحة", label: "الباحة (Al Bahah)" },
+  { value: "بلجرشي", label: "بلجرشي (Baljurashi)" },
+  { value: "المخواة", label: "المخواة (Al Makhwah)" },
+
+  { value: "تبوك", label: "تبوك (Tabuk)" },
+  { value: "ضباء", label: "ضباء (Duba)" },
+  { value: "الوجه", label: "الوجه (Al Wajh)" },
+  { value: "أملج", label: "أملج (Umluj)" },
+
+  { value: "حائل", label: "حائل (Hail)" },
+  { value: "بقعاء", label: "بقعاء (Baqa)" },
+
+  { value: "بريدة", label: "بريدة (Buraidah)" },
+  { value: "عنيزة", label: "عنيزة (Unaizah)" },
+  { value: "الرس", label: "الرس (Ar Rass)" },
+  { value: "البكيرية", label: "البكيرية (Al Bukayriyah)" },
+
+  { value: "عرعر", label: "عرعر (Arar)" },
+  { value: "رفحاء", label: "رفحاء (Rafha)" },
+  { value: "طريف", label: "طريف (Turaif)" },
+
+  { value: "سكاكا", label: "سكاكا (Sakaka)" },
+  { value: "دومة الجندل", label: "دومة الجندل (Dumat Al Jandal)" },
+  { value: "القريات", label: "القريات (Al Qurayyat)" },
+
+  { value: "وادي الدواسر", label: "وادي الدواسر (Wadi Al Dawasir)" },
+  { value: "الخرج", label: "الخرج (Al Kharj)" },
+  { value: "الدوادمي", label: "الدوادمي (Al Dawadmi)" },
+  { value: "الزلفي", label: "الزلفي (Al Zulfi)" },
+  { value: "المجمعة", label: "المجمعة (Al Majma'ah)" },
+  { value: "شقراء", label: "شقراء (Shaqra)" },
+  { value: "عفيف", label: "عفيف (Afif)" },
+  { value: "القويعية", label: "القويعية (Al Quwayiyah)" },
+  { value: "رماح", label: "رماح (Rumah)" },
+  { value: "الدرعية", label: "الدرعية (Diriyah)" },
+
+  { value: "أخرى", label: "أخرى (Other)" },
+];
 export default function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart();
   const { createOrder } = useOrders();
@@ -204,6 +288,23 @@ export default function Checkout() {
             className="rounded-[32px] border border-gray-100 bg-white p-6 shadow-sm md:p-8"
           >
             <h2 className="mb-8 text-2xl font-bold text-gray-800">
+              <div className="mb-8 rounded-2xl border border-green-100 bg-gradient-to-r from-green-50 to-white p-5">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-600 text-2xl text-white">
+                    🛡️
+                  </div>
+
+                  <div>
+                    <p className="font-bold text-gray-800">
+                      بياناتك محمية وآمنة
+                    </p>
+
+                    <p className="text-sm text-gray-500">
+                      نستخدم بياناتك فقط لتوصيل الطلب والتواصل معك.
+                    </p>
+                  </div>
+                </div>
+              </div>
               بيانات الشحن
             </h2>
 
@@ -215,15 +316,45 @@ export default function Checkout() {
                 </label>
 
                 <div className="relative">
-                  <FaUser className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <FaUser className="absolute right-5 top-1/2 -translate-y-1/2 text-green-500" />
 
                   <input
                     type="text"
                     value={customer.name}
                     onChange={(e) => handleChange("name", e.target.value)}
                     placeholder="اسمك الكامل"
-                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 py-4 pr-12 pl-4 outline-none transition-all focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+                    className="
+w-full
+
+rounded-xl
+
+border-2
+border-gray-100
+
+bg-white
+
+py-4
+pr-12
+pl-4
+
+text-gray-800
+
+shadow-sm
+
+transition-all
+duration-300
+
+placeholder:text-green-500
+
+focus:border-green-500
+focus:shadow-lg
+focus:shadow-green-100
+focus:outline-none
+"
                   />
+                  {customer.name.trim() && (
+                    <FaCheckCircle className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
+                  )}
                 </div>
 
                 {errors.name && (
@@ -238,15 +369,45 @@ export default function Checkout() {
                 </label>
 
                 <div className="relative">
-                  <FaPhone className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <FaPhone className="absolute right-5 top-1/2 -translate-y-1/2 text-green-500" />
 
                   <input
                     type="tel"
                     value={customer.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
                     placeholder="05xxxxxxxx"
-                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 py-4 pr-12 pl-4 outline-none transition-all focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+                    className="
+w-full
+
+rounded-xl
+
+border-2
+border-gray-100
+
+bg-white
+
+py-4
+pr-12
+pl-4
+
+text-gray-800
+
+shadow-sm
+
+transition-all
+duration-300
+
+placeholder:text-green-500
+
+focus:border-green-500
+focus:shadow-lg
+focus:shadow-green-100
+focus:outline-none
+"
                   />
+                  {customer.phone.length >= 10 && (
+                    <FaCheckCircle className="absolute left-2 top-3 -translate-y-1/2 text-green-500" />
+                  )}
                 </div>
 
                 {errors.phone && (
@@ -255,19 +416,60 @@ export default function Checkout() {
               </div>
 
               {/* المدينة */}
-              <div>
+              <div className="relative">
                 <label className="mb-2 block font-semibold text-gray-700">
                   المدينة *
                 </label>
 
-                <input
-                  type="text"
-                  value={customer.city}
-                  onChange={(e) => handleChange("city", e.target.value)}
-                  placeholder="مثال: جدة"
-                  className="w-full rounded-2xl border border-gray-200 bg-gray-50 p-4 outline-none transition-all focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
-                />
+                <Select
+                  options={cityOptions}
+                  isSearchable
+                  placeholder="ابحث عن المدينة..."
+                  noOptionsMessage={() => "لا توجد نتائج"}
+                  value={
+                    cityOptions.find((city) => city.value === customer.city) ||
+                    null
+                  }
+                  onChange={(selected) =>
+                    handleChange("city", selected?.value || "")
+                  }
+                  styles={{
+                    control: (base, state) => ({
+                      ...base,
+                      minHeight: 56,
+                      borderRadius: 16,
+                      borderColor: state.isFocused ? "#16a34a" : "#e5e7eb",
+                      boxShadow: state.isFocused
+                        ? "0 0 0 4px rgba(34,197,94,.12)"
+                        : "none",
+                      "&:hover": {
+                        borderColor: "#16a34a",
+                      },
+                    }),
 
+                    menu: (base) => ({
+                      ...base,
+                      borderRadius: 16,
+                      overflow: "hidden",
+                      zIndex: 9999,
+                    }),
+
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isFocused ? "#dcfce7" : "#fff",
+                      color: "#111827",
+                      cursor: "pointer",
+                    }),
+
+                    placeholder: (base) => ({
+                      ...base,
+                      color: "#9ca3af",
+                    }),
+                  }}
+                />
+                {customer.city && !errors.city && (
+                  <FaCheckCircle className="absolute left-4 top-[58px] -translate-y-1/2 text-green-500" />
+                )}
                 {errors.city && (
                   <p className="mt-2 text-sm text-red-500">{errors.city}</p>
                 )}
@@ -280,15 +482,45 @@ export default function Checkout() {
                 </label>
 
                 <div className="relative">
-                  <FaMapMarkerAlt className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <FaMapMarkerAlt className="absolute right-5 top-1/2 -translate-y-1/2 text-green-500" />
 
                   <input
                     type="text"
                     value={customer.address}
                     onChange={(e) => handleChange("address", e.target.value)}
                     placeholder="الحي، الشارع، رقم المبنى"
-                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 py-4 pr-12 pl-4 outline-none transition-all focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+                    className="
+w-full
+
+rounded-xl
+
+border-2
+border-gray-100
+
+bg-white
+
+py-4
+pr-12
+pl-4
+
+text-gray-800
+
+shadow-sm
+
+transition-all
+duration-300
+
+placeholder:text-green-500
+
+focus:border-green-500
+focus:shadow-lg
+focus:shadow-green-100
+focus:outline-none
+"
                   />
+                  {customer.address.trim() && (
+                    <FaCheckCircle className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
+                  )}
                 </div>
 
                 {errors.address && (
@@ -303,14 +535,41 @@ export default function Checkout() {
                 </label>
 
                 <div className="relative">
-                  <FaStickyNote className="absolute right-5 top-5 text-gray-400" />
+                  <FaStickyNote className="absolute right-5 top-5 text-green-500" />
 
                   <textarea
                     rows={4}
                     value={customer.notes}
                     onChange={(e) => handleChange("notes", e.target.value)}
                     placeholder="أي تعليمات إضافية للتوصيل"
-                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 py-4 pr-12 pl-4 outline-none transition-all focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+                    className="
+w-full
+
+rounded-xl
+
+border-2
+border-gray-100
+
+bg-white
+
+py-4
+pr-12
+pl-4
+
+text-gray-800
+
+shadow-sm
+
+transition-all
+duration-300
+
+placeholder:text-green-500
+
+focus:border-green-500
+focus:shadow-lg
+focus:shadow-green-100
+focus:outline-none
+"
                   />
                 </div>
               </div>
@@ -326,18 +585,90 @@ export default function Checkout() {
             <button
               type="submit"
               disabled={submitting}
-              className="mt-8 w-full rounded-2xl bg-gradient-to-r from-green-600 to-emerald-500 py-4 font-bold text-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+              className="
+group
+relative
+overflow-hidden
+
+mt-8
+
+flex
+h-14
+w-full
+items-center
+justify-center
+gap-2
+
+rounded-xl
+
+bg-gradient-to-r
+from-green-600
+via-emerald-600
+to-green-700
+
+font-bold
+text-white
+
+shadow-xl
+
+transition-all
+duration-300
+
+hover:-translate-y-1
+hover:shadow-2xl
+
+active:scale-[0.98]
+
+disabled:opacity-60
+"
             >
-              {submitting ? "جارِ تأكيد الطلب..." : "تأكيد الطلب"}
+              <span
+                className="
+absolute
+-left-20
+top-0
+h-full
+w-10
+-skew-x-12
+bg-white/25
+blur-sm
+animate-[shine_3s_linear_infinite]
+"
+              />
+              ⚡{submitting ? "جارِ تأكيد الطلب..." : "تأكيد الطلب"}
             </button>
+            <div className="mt-4 text-center text-sm text-gray-500">
+              🚚 عادة يتم التواصل معك خلال أقل من ساعة لتأكيد الطلب.
+            </div>
           </form>
 
           {/* ملخص الطلب */}
           <div className="sticky top-24 h-fit rounded-[32px] border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="mb-6 rounded-2xl border border-green-100 bg-gradient-to-r from-green-50 to-white p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-white text-xl">
+                  🔒
+                </div>
+
+                <div>
+                  <p className="font-bold text-gray-800">طلب آمن 100%</p>
+
+                  <p className="text-sm text-gray-500">
+                    لن تدفع أي مبلغ حتى تستلم طلبك.
+                  </p>
+                </div>
+              </div>
+            </div>
             <h2 className="mb-6 text-2xl font-bold text-gray-800">
               ملخص الطلب
             </h2>
+            <div className="mb-5 flex items-center justify-between rounded-2xl bg-green-50 px-4 py-3">
+              <span className="font-semibold">عدد المنتجات</span>
 
+              <span className="rounded-full bg-green-600 px-3 py-1 text-white">
+                {cartItems.reduce((s, item) => s + item.quantity, 0)}
+              </span>
+            </div>
             <div className="flex flex-col gap-4">
               {cartItems.map((item) => (
                 <div

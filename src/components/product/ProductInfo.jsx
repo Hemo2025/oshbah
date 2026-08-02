@@ -16,6 +16,13 @@ function ProductInfo({ product }) {
 
   return (
     <div>
+      {discount > 0 && (
+        <div className="mb-5">
+          <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-5 py-2 text-sm font-bold text-white shadow-lg">
+            🔥 عرض لفترة محدودة • وفر {product.oldPrice - product.price} ر.س
+          </div>
+        </div>
+      )}
       {/* Category */}
       <div className="mb-5 flex items-center gap-3">
         <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
@@ -39,7 +46,9 @@ function ProductInfo({ product }) {
         <div className="flex items-center gap-1 rounded-xl bg-yellow-50 px-4 py-2">
           <FaStar className="text-yellow-400" />
 
-          <span className="font-bold">{averageRating || "جديد"}</span>
+          <span className="font-bold">
+            {reviews.length > 0 ? averageRating : "منتج جديد"}
+          </span>
         </div>
 
         <span className="text-gray-500">({reviews?.length || 0} تقييم)</span>
@@ -61,7 +70,9 @@ function ProductInfo({ product }) {
 
         {discount > 0 && (
           <p className="mt-3 font-semibold text-red-500">
-            وفر {product.oldPrice - product.price} ر.س
+            <div className="mt-4 inline-flex rounded-full bg-red-50 px-4 py-2 text-sm font-bold text-red-600">
+              🔥 وفر {product.oldPrice - product.price} ر.س عند الشراء الآن
+            </div>{" "}
           </p>
         )}
       </div>
