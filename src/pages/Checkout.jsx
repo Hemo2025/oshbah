@@ -14,6 +14,7 @@ import {
 import { useCart } from "../hooks/useCart";
 import { useOrders } from "../hooks/useOrders";
 import { trackEvent } from "../lib/metaPixel";
+import { trackTikTok } from "../lib/tiktokPixel";
 const emptyCustomer = {
   name: "",
   phone: "",
@@ -143,6 +144,16 @@ export default function Checkout() {
       value: finalTotal,
       currency: "SAR",
     });
+    trackTikTok("InitiateCheckout", {
+      contents: cartItems.map((item) => ({
+        content_id: item.id,
+        content_name: item.name,
+        quantity: item.quantity,
+        price: Number(item.price),
+      })),
+      value: Number(finalTotal),
+      currency: "SAR",
+    });
   }, [cartItems, finalTotal]);
   if (cartItems.length === 0 && !orderCompleted) {
     return <Navigate to="/cart" replace />;
@@ -224,7 +235,16 @@ export default function Checkout() {
         value: Number(order.total),
         currency: "SAR",
       });
-
+      trackTikTok("CompletePayment", {
+        contents: order.items.map((item) => ({
+          content_id: item.id,
+          content_name: item.name,
+          quantity: item.quantity,
+          price: Number(item.price),
+        })),
+        value: Number(order.total),
+        currency: "SAR",
+      });
       console.log("EMAIL RESPONSE:", data);
 
       const myOrders = JSON.parse(localStorage.getItem("myOrders") || "[]");
