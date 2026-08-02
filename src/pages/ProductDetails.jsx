@@ -10,7 +10,7 @@ import { useCart } from "../hooks/useCart";
 import ReviewForm from "../components/product/ReviewForm";
 import ProductReviews from "../components/product/ProductReviews";
 import { trackEvent } from "../lib/metaPixel";
-
+import { trackTikTok } from "../lib/tiktokPixel";
 import SEO from "../components/SEO/SEO";
 
 function ProductDetails() {
@@ -38,6 +38,13 @@ function ProductDetails() {
     trackEvent("ViewContent", {
       content_name: product.name,
       content_ids: [product.id],
+      content_type: "product",
+      value: Number(product.price),
+      currency: "SAR",
+    });
+    trackTikTok("ViewContent", {
+      content_id: product.id,
+      content_name: product.name,
       content_type: "product",
       value: Number(product.price),
       currency: "SAR",
@@ -279,6 +286,13 @@ function ProductDetails() {
                 trackEvent("AddToCart", {
                   content_name: product.name,
                   content_ids: [product.id],
+                  content_type: "product",
+                  value: Number(product.price),
+                  currency: "SAR",
+                });
+                trackTikTok("AddToCart", {
+                  content_id: product.id,
+                  content_name: product.name,
                   content_type: "product",
                   value: Number(product.price),
                   currency: "SAR",
