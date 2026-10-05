@@ -1,4 +1,4 @@
-export const META_PIXEL_ID = "2223726624866107";
+export const META_PIXEL_ID = "1482126420500706";
 
 export const initFacebookPixel = () => {
   if (window.fbq) return;
