@@ -1,33 +1,32 @@
 import { useEffect, useState } from "react";
 import { SettingsContext } from "./settings-context-instance";
 import { DEFAULT_SETTINGS } from "./default-settings";
-
 import { getSettings, saveSettings } from "../services/settingsService";
+
+// دمج الإعدادات مع الحفاظ على القيم الافتراضية
+const deepMerge = (target, source) => {
+  const output = { ...target };
+
+  Object.keys(source).forEach((key) => {
+    if (
+      typeof source[key] === "object" &&
+      source[key] !== null &&
+      !Array.isArray(source[key])
+    ) {
+      output[key] = deepMerge(target[key] || {}, source[key]);
+    } else {
+      output[key] = source[key];
+    }
+  });
+
+  return output;
+};
 
 export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-
   const [loading, setLoading] = useState(true);
 
-  // دمج الكائنات المتداخلة
-  const deepMerge = (target, source) => {
-    const output = { ...target };
-
-    Object.keys(source).forEach((key) => {
-      if (
-        typeof source[key] === "object" &&
-        source[key] !== null &&
-        !Array.isArray(source[key])
-      ) {
-        output[key] = deepMerge(target[key] || {}, source[key]);
-      } else {
-        output[key] = source[key];
-      }
-    });
-
-    return output;
-  };
-
+  // تحميل الإعدادات مرة واحدة عند تشغيل المتجر
   useEffect(() => {
     let mounted = true;
 
@@ -52,27 +51,29 @@ export function SettingsProvider({ children }) {
     return () => {
       mounted = false;
     };
-  });
+  }, []);
 
+  // تحديث الإعدادات وحفظها
   const updateSettings = async (updates) => {
+    const newSettings = deepMerge(settings, updates);
+
     try {
-      const newSettings = deepMerge(settings, updates);
-
-      setSettings(newSettings);
-
       await saveSettings(newSettings);
+      setSettings(newSettings);
     } catch (error) {
       console.error("Error saving settings:", error);
+      throw error;
     }
   };
 
+  // استعادة الإعدادات الافتراضية
   const resetSettings = async () => {
     try {
-      setSettings(DEFAULT_SETTINGS);
-
       await saveSettings(DEFAULT_SETTINGS);
+      setSettings(DEFAULT_SETTINGS);
     } catch (error) {
       console.error("Error resetting settings:", error);
+      throw error;
     }
   };
 
@@ -84,9 +85,6 @@ export function SettingsProvider({ children }) {
 
   if (loading) {
     return null;
-
-    // أو:
-    // return <div>Loading...</div>;
   }
 
   return (

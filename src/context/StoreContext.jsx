@@ -46,7 +46,19 @@ export function StoreProvider({ children }) {
           ...item.data(),
         }));
 
-        setCategories(categoriesData);
+        // التصنيفات القديمة التي لا تملك sortOrder تبقى في القائمة
+        // مع الحفاظ على ترتيبها الحالي إلى أن يحدد المستخدم ترتيبًا جديدًا.
+        setCategories(
+          categoriesData
+            .map((category, index) => ({
+              ...category,
+              sortOrder:
+                typeof category.sortOrder === "number"
+                  ? category.sortOrder
+                  : index,
+            }))
+            .sort((a, b) => a.sortOrder - b.sortOrder),
+        );
       } catch (error) {
         console.error("Firebase load error:", error);
       } finally {
@@ -56,8 +68,6 @@ export function StoreProvider({ children }) {
 
     loadData();
   }, []);
-
-  // ---------------- Products ----------------
 
   // ---------------- Products ----------------
 
@@ -90,6 +100,7 @@ export function StoreProvider({ children }) {
 
       status: "active",
     };
+
     const ref = await addDoc(collection(db, "products"), newProduct);
 
     const savedProduct = {
@@ -158,10 +169,17 @@ export function StoreProvider({ children }) {
   // ---------------- Categories ----------------
 
   const addCategory = async (category) => {
+    const maxOrder = categories.reduce(
+      (max, item) => Math.max(max, Number(item.sortOrder) || 0),
+      -1,
+    );
+
     const newCategory = {
       ...category,
 
       slug: category.slug ? slugify(category.slug) : slugify(category.name),
+
+      sortOrder: maxOrder + 1,
 
       createdAt: serverTimestamp(),
     };
@@ -193,11 +211,43 @@ export function StoreProvider({ children }) {
     );
   };
 
+  // إعادة ترتيب التصنيفات وحفظ الترتيب الجديد في Firebase
+  const reorderCategories = async (orderedCategories) => {
+    const previousCategories = categories;
+
+    // تحديث الواجهة مباشرة لتكون الاستجابة أسرع
+    const updatedCategories = orderedCategories.map((category, index) => ({
+      ...category,
+      sortOrder: index,
+    }));
+
+    setCategories(updatedCategories);
+
+    try {
+      await Promise.all(
+        updatedCategories.map((category) =>
+          updateDoc(doc(db, "categories", category.id), {
+            sortOrder: category.sortOrder,
+          }),
+        ),
+      );
+    } catch (error) {
+      console.error("Category reorder error:", error);
+
+      // استعادة الترتيب السابق إذا فشل الحفظ
+      setCategories(previousCategories);
+
+      throw error;
+    }
+  };
+
   const deleteCategory = async (id) => {
     await deleteDoc(doc(db, "categories", id));
 
     setCategories((prev) => prev.filter((category) => category.id !== id));
   };
+
+  // ---------------- Context Value ----------------
 
   const value = {
     products,
@@ -214,6 +264,7 @@ export function StoreProvider({ children }) {
     addCategory,
     updateCategory,
     deleteCategory,
+    reorderCategories,
   };
 
   return (

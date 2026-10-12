@@ -1,110 +1,126 @@
 import { FaStar, FaCheckCircle } from "react-icons/fa";
-
 import { useReviews } from "../../hooks/useReviews";
-
+import { Link } from "react-router-dom";
 function ProductInfo({ product }) {
   const { averageRating, reviews } = useReviews(product.id);
-  console.log("Product ID:", product.id);
-  console.log("Reviews:", reviews);
 
-  const discount =
-    product.oldPrice && product.price
-      ? Math.round(
-          ((product.oldPrice - product.price) / product.oldPrice) * 100,
-        )
-      : 0;
+  const price = Number(product.price) || 0;
+  const oldPrice = Number(product.oldPrice) || 0;
+  const stock = Number(product.stock) || 0;
+
+  const hasDiscount = oldPrice > price && oldPrice > 0;
+  const discount = hasDiscount
+    ? Math.round(((oldPrice - price) / oldPrice) * 100)
+    : 0;
+
+  const formatPrice = (value) =>
+    new Intl.NumberFormat("ar-SA", {
+      maximumFractionDigits: 2,
+    }).format(value);
 
   return (
-    <div>
-      {discount > 0 && (
-        <div className="mb-5">
-          <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-5 py-2 text-sm font-bold text-white shadow-lg">
-            🔥 عرض لفترة محدودة • وفر {product.oldPrice - product.price} ر.س
-          </div>
+    <div className="w-full min-w-0 text-right font-sans">
+      {/* التصنيف */}
+
+      {product.category && (
+        <div className="mb-5 flex items-center gap-2.5">
+          <span className="text-sm font-bold text-gray-500">التصنيف:</span>
+
+          <Link
+            to={`/categories/${encodeURIComponent(product.category)}`}
+            className="inline-flex items-center rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-extrabold text-green-800 transition-all duration-200 hover:border-green-700 hover:bg-green-800 hover:text-white"
+          >
+            {product.category}
+          </Link>
         </div>
       )}
-      {/* Category */}
-      <div className="mb-5 flex items-center gap-3">
-        <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-          🌿 {product.category}
-        </span>
 
-        {discount > 0 && (
-          <span className="rounded-full bg-red-100 px-4 py-2 text-sm font-bold text-red-600">
-            خصم {discount}%
-          </span>
-        )}
-      </div>
-
-      {/* Name */}
-      <h1 className="text-3xl font-bold leading-relaxed text-gray-800 lg:text-5xl">
+      {/* اسم المنتج */}
+      <h1 className="text-2xl font-extrabold leading-[1.8] tracking-tight text-gray-900 sm:text-3xl lg:text-[2.4rem]">
         {product.name}
       </h1>
-
-      {/* Rating */}
-      <div className="mt-5 flex items-center gap-3">
-        <div className="flex items-center gap-1 rounded-xl bg-yellow-50 px-4 py-2">
-          <FaStar className="text-yellow-400" />
-
-          <span className="font-bold">
-            {reviews.length > 0 ? averageRating : "منتج جديد"}
+      {/* التقييم */}
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+        <div className="flex items-center gap-1.5">
+          <FaStar className="text-amber-400" />
+          <span className="font-bold text-gray-800">
+            {reviews?.length > 0
+              ? Number(averageRating || 0).toFixed(1)
+              : "جديد"}
           </span>
         </div>
 
-        <span className="text-gray-500">({reviews?.length || 0} تقييم)</span>
+        <span className="text-gray-300">|</span>
+
+        <span className="font-medium text-gray-500">
+          {reviews?.length > 0
+            ? `${reviews.length} تقييم`
+            : "لا توجد تقييمات بعد"}
+        </span>
       </div>
+      <div className="my-6 h-px bg-gray-200 sm:my-7" />
+      {/* السعر والخصم */}
+      <div>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          {/* السعر الحالي */}
+          <div className="flex items-baseline gap-2">
+            <span className="text-4xl font-black leading-none tracking-tight text-green-700 sm:text-5xl">
+              {formatPrice(price)}
+            </span>
 
-      {/* Price */}
-      <div className="mt-8 rounded-3xl bg-green-50 p-6">
-        <div className="flex flex-wrap items-center gap-4">
-          <span className="text-4xl font-bold text-green-600">
-            {product.price} ر.س
-          </span>
+            <span className="text-base font-extrabold text-green-800 sm:text-lg">
+              ر.س
+            </span>
+          </div>
 
-          {product.oldPrice > 0 && (
-            <span className="text-2xl text-gray-400 line-through">
-              {product.oldPrice} ر.س
+          {/* السعر السابق */}
+          {hasDiscount && (
+            <span className="text-lg font-bold text-red-500 line-through decoration-2 sm:text-xl">
+              {formatPrice(oldPrice)} ر.س
             </span>
           )}
         </div>
 
-        {discount > 0 && (
-          <p className="mt-3 font-semibold text-red-500">
-            <div className="mt-4 inline-flex rounded-full bg-red-50 px-4 py-2 text-sm font-bold text-red-600">
-              🔥 وفر {product.oldPrice - product.price} ر.س عند الشراء الآن
-            </div>{" "}
-          </p>
+        {/* نسبة الخصم */}
+        {hasDiscount && (
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center rounded-lg bg-red-600 px-3 py-1.5 text-sm font-extrabold text-white">
+              خصم {discount}%
+            </span>
+
+            <p className="text-sm font-bold text-red-600">
+              وفّر {formatPrice(oldPrice - price)} ر.س
+            </p>
+          </div>
         )}
       </div>
+      {/* حالة التوفر */}
+      <div className="mt-6">
+        {stock > 0 ? (
+          <div className="inline-flex items-center gap-2 rounded-lg bg-green-50 px-3.5 py-2.5">
+            <FaCheckCircle className="shrink-0 text-green-700" />
 
-      {/* Stock */}
-      <div className="mt-8">
-        {product.stock > 0 ? (
-          <div className="inline-flex items-center gap-3 rounded-2xl bg-green-100 px-5 py-3 text-green-700">
-            <FaCheckCircle />
-
-            <span className="font-bold">متوفر بالمخزون</span>
-
-            <span className="rounded-full bg-white px-3 py-1 text-sm">
-              {product.stock} قطعة
+            <span className="text-sm font-bold text-green-800">
+              متوفر للطلب
             </span>
           </div>
         ) : (
-          <div className="inline-flex items-center rounded-2xl bg-red-100 px-5 py-3 font-bold text-red-600">
-            غير متوفر حالياً
+          <div className="inline-flex items-center rounded-lg bg-red-50 px-3.5 py-2.5">
+            <span className="text-sm font-bold text-red-700">
+              غير متوفر حاليًا
+            </span>
           </div>
         )}
       </div>
-
-      {/* Features */}
-
-      {/* Description */}
+      {/* وصف المنتج */}
       {product.description && (
-        <div className="mt-10 border-t pt-8">
-          <h3 className="mb-4 text-xl font-bold text-gray-800">وصف المنتج</h3>
+        <div className="mt-8 border-t border-gray-200 pt-6 sm:mt-9 sm:pt-7">
+          <h2 className="mb-3 text-lg font-extrabold text-gray-900 sm:text-xl">
+            وصف المنتج
+          </h2>
 
           <div
-            className="product-description leading-9 text-gray-600"
+            className="product-description break-words text-[15px] font-medium leading-8 text-gray-700 sm:text-base sm:leading-9"
             dangerouslySetInnerHTML={{
               __html: product.description,
             }}

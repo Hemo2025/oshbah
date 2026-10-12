@@ -9,6 +9,7 @@ import { uploadToCloudinary } from "../services/cloudinary";
 const emptyProduct = {
   name: "",
   slug: "",
+  promoTitle: "",
 
   seoTitle: "",
   seoDescription: "",
@@ -281,6 +282,40 @@ function ProductForm() {
                 onChange={(e) => handleChange("stock", e.target.value)}
                 className="w-full rounded-2xl border p-4"
               />
+            </div>
+            {/* Promotional Title */}
+            <div className="mt-8 rounded-2xl border border-green-200 bg-green-50/50 p-5 md:col-span-2">
+              <label className="mb-2 block font-semibold text-gray-800">
+                العنوان الترويجي على صورة المنتج
+              </label>
+
+              <input
+                type="text"
+                value={form.promoTitle || ""}
+                onChange={(e) => handleChange("promoTitle", e.target.value)}
+                maxLength={40}
+                placeholder="مثال: أصلي 100% أو الأكثر مبيعًا"
+                className="w-full rounded-2xl border bg-white p-4 outline-none transition focus:border-green-600"
+              />
+
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <p className="text-sm text-gray-500">
+                  اترك الحقل فارغًا إذا لم ترغب في إظهار عنوان.
+                </p>
+
+                <span className="shrink-0 text-sm text-gray-400">
+                  {(form.promoTitle || "").length}/40
+                </span>
+              </div>
+
+              {form.promoTitle?.trim() && (
+                <div className="mt-4">
+                  <p className="mb-2 text-sm text-gray-600">معاينة العنوان:</p>
+                  <span className="inline-flex rounded-full bg-green-700 px-4 py-2 text-sm font-bold text-white shadow-sm">
+                    {form.promoTitle.trim()}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
