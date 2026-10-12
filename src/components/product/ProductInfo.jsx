@@ -27,7 +27,7 @@ function ProductInfo({ product }) {
           <span className="text-sm font-bold text-gray-500">التصنيف:</span>
 
           <Link
-            to={`/categories/${encodeURIComponent(product.category)}`}
+            to={`/products?category=${encodeURIComponent(product.category)}`}
             className="inline-flex items-center rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-extrabold text-green-800 transition-all duration-200 hover:border-green-700 hover:bg-green-800 hover:text-white"
           >
             {product.category}
